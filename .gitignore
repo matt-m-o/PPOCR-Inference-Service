@@ -1,0 +1,7 @@
+*.sln
+*.json
+*.vcxproj
+*.filters
+build/CMakeFiles/*
+fastdeploy-*/
+.vscode
