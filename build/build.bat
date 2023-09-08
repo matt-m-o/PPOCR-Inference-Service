@@ -1,0 +1,1 @@
+msbuild PPOCR-Inference-Service.sln /m:4 /p:Configuration=Release
