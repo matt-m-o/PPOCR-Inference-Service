@@ -1,3 +1,4 @@
+https://bj.bcebos.com/fastdeploy/release/cpp/fastdeploy-win-x64-1.0.7.zip
 https://github.com/nlohmann/json/releases/download/v3.11.2/include.zip
 https://github.com/yhirose/cpp-httplib/archive/refs/tags/v0.14.0.zip
 https://github.com/ReneNyffenegger/cpp-base64/archive/refs/tags/V2.rc.08.zip
