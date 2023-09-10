@@ -1,0 +1,9 @@
+{
+    "name": "default",
+    "language_presets": {
+        "ja": "japanese_v4"
+    },
+    "language_code": "ja",
+    "inference_backend" : "ONNX_CPU",
+    "port": 12345
+}

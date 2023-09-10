@@ -75,10 +75,14 @@ void reinitializePipeline( fastdeploy::pipeline::PPOCRv4& pipeline, Settings& se
 
 int main( int argc, char *argv[] ) {  
 
-  // OCR // // // // ///////////////////////////////////////////////////////////
+  // OCR 
 
   AppOptions app_options = handleAppArgs( argc, argv );
-  Settings settings = createSettings( app_options );
+
+  AppSettingsPreset app_settings_preset = loadAppSettingsPreset( app_options );
+
+  Settings settings = createSettings( app_settings_preset );
+  
 
   fastdeploy::pipeline::PPOCRv4 ppocr_v4_pipeline = initPipeline(
     settings.models.detectionModel,
@@ -87,7 +91,8 @@ int main( int argc, char *argv[] ) {
   );
 
 
-  // SERVER /////////////////////////////////////////////////
+
+  // SERVER
 
   #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
     SSLServer svr(SERVER_CERT_FILE, SERVER_PRIVATE_KEY_FILE);
@@ -120,37 +125,28 @@ int main( int argc, char *argv[] ) {
     res.set_content( resultJson.dump(), "application/json" );
   });
 
-  svr.Post("/settings", [&](const Request &req, Response &res,
-                                    const ContentReader &content_reader) {
+  svr.Post("/settings", [&]( const Request &req, Response &res,
+                             const ContentReader &content_reader) {
     std::string body;
     content_reader( [&]( const char *data, size_t data_length ) {
       body.append(data, data_length);
       return true;
     });
 
-    auto bodyJson = json::parse(body);
+    json bodyJson = json::parse(body);
 
-    if ( bodyJson.empty() == false ) {
+    if ( bodyJson.empty() == false ) {            
 
-      AppOptions new_app_options;
-
-      if ( bodyJson["detection_model_dir"].is_string() )
-        new_app_options.detection_model_dir = bodyJson["detection_model_dir"];
+      if ( bodyJson["app_settings_preset_name"].is_string() )
+        app_options.app_settings_preset_name = bodyJson["app_settings_preset_name"];
       
-      if ( bodyJson["classification_model_dir"].is_string() )
-        new_app_options.classification_model_dir = bodyJson["classification_model_dir"];
+      if ( bodyJson["language_code"].is_string() )
+        app_options.language_code = bodyJson["language_code"];
       
-      if ( bodyJson["recognition_model_dir"].is_string() )
-        new_app_options.recognition_model_dir = bodyJson["recognition_model_dir"];
-      
-      if ( bodyJson["recognition_label_file_dir"].is_string() )
-        new_app_options.recognition_label_file_dir = bodyJson["recognition_label_file_dir"];      
-
       if ( bodyJson["inference_backend"].is_string() )
-        new_app_options.inference_backend = bodyJson["inference_backend"];
-
+        app_options.inference_backend = bodyJson["inference_backend"];
       
-      updateSettings( settings, new_app_options );
+      updateSettings( settings, app_options );
 
       reinitializePipeline( ppocr_v4_pipeline, settings );
 
