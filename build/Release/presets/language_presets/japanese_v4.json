@@ -1,6 +1,6 @@
 {
     "name": "japanese_v4",
-    "language": "ja",
+    "language_code": "ja",
     "detection_model_dir": "ch_PP-OCRv3_det_infer",
     "classification_model_dir" : "ch_ppocr_mobile_v2.0_cls_infer",
     "recognition_model_dir" : "japan_PP-OCRv4_rec_infer",

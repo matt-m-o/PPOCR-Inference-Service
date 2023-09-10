@@ -69,11 +69,11 @@ AppOptions handleAppArgs( int argc, char *argv[] ) {
 class SettingsManager {
 
   private:
-    Settings settings;
     AppSettingsPreset app_settings_preset;
     std::map< std::string, LanguagePreset > language_presets;
 
   public:
+    Settings settings;
     SettingsManager( AppOptions app_options ) {
       initSettings( app_options );
     }
@@ -101,8 +101,7 @@ class SettingsManager {
 
       app_settings_preset.inference_backend = app_settings_preset_json["inference_backend"].get< std::string >();
       app_settings_preset.server_port = app_settings_preset_json["port"].get<int>();
-      app_settings_preset.language_code = app_settings_preset_json["language_code"].get< std::string >();
-
+      app_settings_preset.language_code = app_settings_preset_json["language_code"].get< std::string >();      
 
       if ( app_settings_preset_json["language_presets"].is_null() )
         return;
@@ -237,4 +236,17 @@ class SettingsManager {
       createSettings();
       return settings;
     }
+
+    
+    std::vector< std::string > getAvailableLanguages() {
+
+      std::vector< std::string > languages_vector;
+
+      for (const auto& pair : language_presets) {
+        languages_vector.push_back(pair.first);        
+      }
+
+      return languages_vector;
+    }
+
 };
