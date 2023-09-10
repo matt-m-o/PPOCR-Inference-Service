@@ -148,12 +148,24 @@ int main( int argc, char *argv[] ) {
       
       settings_manager.updateSettings( app_options );
 
-      reinitializePipeline( ppocr_v4_pipeline, settings_manager.getSettings() );
+      reinitializePipeline( ppocr_v4_pipeline, settings_manager.settings );
 
       res.set_content( "", "application/json" );
+    }    
+    
+  });
+
+  svr.Get("/supported-languages", [&](const Request & /*req*/, Response &res) {
+
+    nlohmann::json resultsJson;
+    resultsJson["language_codes"] = json::array();
+
+    for ( const std::string& language_code : settings_manager.getAvailableLanguages() ) {
+      
+      resultsJson["language_codes"].push_back( language_code );      
     }
 
-    
+    res.set_content( resultsJson.dump(), "application/json" );
   });
 
 

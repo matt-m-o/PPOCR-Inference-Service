@@ -234,11 +234,6 @@ nlohmann::json ocrResultToJson( const InferResult& infer_result ) {
     itemIdx++;
   }
 
-  // resultsJson["score"] = json::array();
-  // for (const float& score : ocrResult.cls_scores) {
-  //     resultsJson["score"].push_back(score);
-  // }
-
   return resultsJson;
 }
 
