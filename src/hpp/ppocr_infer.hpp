@@ -1,6 +1,7 @@
 #ifndef PPOCR_INFER_H
 #define PPOCR_INFER_H
 
+// #include "settings.hpp"
 #include <iostream>
 #include <fastdeploy/vision.h>
 #include <nlohmann/json.hpp>
@@ -160,6 +161,7 @@ fastdeploy::pipeline::PPOCRv4 initPipeline(
     fastdeploy::vision::ocr::DBDetector &det_model, //const std::string &det_model_dir,
     fastdeploy::vision::ocr::Classifier &cls_model, // const std::string &cls_model_dir,
     fastdeploy::vision::ocr::Recognizer &rec_model // const std::string &rec_model_dir,
+    // Settings& settings
 ) {
 
     // The classification model is optional, so the PP-OCR can also be connected
@@ -168,6 +170,11 @@ fastdeploy::pipeline::PPOCRv4 initPipeline(
     // auto ppocr_v4 =
     //     fastdeploy::pipeline::PPOCRv4(&det_model, &cls_model, &rec_model);
     auto pipeline = fastdeploy::pipeline::PPOCRv4( &det_model, &cls_model, &rec_model );
+    // auto pipeline = fastdeploy::pipeline::PPOCRv4(
+    //     &settings.models.detectionModel,
+    //     &settings.models.classificationModel,
+    //     &settings.models.recognitionModel
+    // );
 
     
     // Set inference batch size for cls model and rec model, the value could be -1

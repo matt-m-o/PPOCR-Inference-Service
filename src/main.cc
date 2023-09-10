@@ -1,10 +1,10 @@
+#include "hpp/settings.hpp";
 #include "hpp/ppocr_infer.hpp"
 #include <chrono>
 #include <cstdio>
 #include <httplib.h>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
-#include "hpp/settings.hpp";
 
 #define SERVER_CERT_FILE "./cert.pem"
 #define SERVER_PRIVATE_KEY_FILE "./key.pem"
@@ -70,6 +70,7 @@ void reinitializePipeline( fastdeploy::pipeline::PPOCRv4& pipeline, Settings& se
     settings.models.detectionModel,
     settings.models.classificationModel,
     settings.models.recognitionModel
+    // settings
   );
 }
 
@@ -79,17 +80,16 @@ int main( int argc, char *argv[] ) {
 
   AppOptions app_options = handleAppArgs( argc, argv );
 
-  AppSettingsPreset app_settings_preset = loadAppSettingsPreset( app_options );
+  SettingsManager settings_manager( app_options );
 
-  Settings settings = createSettings( app_settings_preset );
+  Settings settings = settings_manager.getSettings();
   
-
   fastdeploy::pipeline::PPOCRv4 ppocr_v4_pipeline = initPipeline(
     settings.models.detectionModel,
     settings.models.classificationModel,
     settings.models.recognitionModel
+    // settings
   );
-
 
 
   // SERVER
@@ -146,9 +146,9 @@ int main( int argc, char *argv[] ) {
       if ( bodyJson["inference_backend"].is_string() )
         app_options.inference_backend = bodyJson["inference_backend"];
       
-      updateSettings( settings, app_options );
+      settings_manager.updateSettings( app_options );
 
-      reinitializePipeline( ppocr_v4_pipeline, settings );
+      reinitializePipeline( ppocr_v4_pipeline, settings_manager.getSettings() );
 
       res.set_content( "", "application/json" );
     }
