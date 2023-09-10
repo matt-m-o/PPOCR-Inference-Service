@@ -1,1 +1,1 @@
-main.exe ./ch_PP-OCRv3_det_infer ./ch_ppocr_mobile_v2.0_cls_infer ./japan_PP-OCRv4_rec_infer ./dict_japan.txt 2
+.\ppocr_infer_service.exe "default" "ja" "54321"

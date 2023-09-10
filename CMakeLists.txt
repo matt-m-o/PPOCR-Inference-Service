@@ -21,8 +21,8 @@ set(BASE64_LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/includes/cpp-base64-2.rc.08)
 set(INCLUDES_DIR ${CMAKE_SOURCE_DIR}/src)
 
 # Executable
-add_executable(main ${CMAKE_SOURCE_DIR}/src/main.cc)
-target_include_directories(main PRIVATE ${HTTP_LIB_INCLUDE_DIR})
-target_link_libraries(main ${FASTDEPLOY_LIBS})
-target_link_libraries(main ${NLOHMANN_LIB_INCLUDE_DIR})
-target_link_libraries(main ${BASE64_LIB_INCLUDE_DIR})
+add_executable(ppocr_infer_service ${CMAKE_SOURCE_DIR}/src/main.cc)
+target_include_directories(ppocr_infer_service PRIVATE ${HTTP_LIB_INCLUDE_DIR})
+target_link_libraries(ppocr_infer_service ${FASTDEPLOY_LIBS})
+target_link_libraries(ppocr_infer_service ${NLOHMANN_LIB_INCLUDE_DIR})
+target_link_libraries(ppocr_infer_service ${BASE64_LIB_INCLUDE_DIR})
