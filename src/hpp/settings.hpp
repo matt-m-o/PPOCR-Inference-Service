@@ -1,8 +1,8 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef SETTINGS_HPP
+#define SETTINGS_HPP
 
 // #include <string>
-#include "ppocr_infer.hpp"
+// #include "ppocr_infer.hpp"
 #include "util.hpp"
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -20,6 +20,7 @@ struct AppSettingsPreset {
   std::string app_settings_preset_name = "default";  
   std::map< std::string, std::string > language_presets; // < language_code, preset_name >
   std::string language_code;
+  bool initialize_all_language_presets = false;
   std::string inference_backend;
   int server_port;
 };
@@ -34,12 +35,6 @@ struct LanguagePreset {
   std::string recognition_label_file_dir; // Also known as Dictionary
 };
 
-// struct Settings {  
-//   std::string language_code;  
-//   Models models;
-//   fastdeploy::RuntimeOption runtime_option;
-//   int server_port;
-// };
 
 
 AppOptions handleAppArgs( int argc, char *argv[] ) {  
@@ -70,124 +65,35 @@ AppOptions handleAppArgs( int argc, char *argv[] ) {
 
 
 
-class Settings {
-
-  // private:
-
-  public:
-    std::string language_code;  
-    Models models;
-    fastdeploy::RuntimeOption runtime_option;
-    int server_port;
-    
-    Settings() = default;
-
-    Settings(
-      LanguagePreset language_preset,
-      std::string backend,
-      int port
-    ) {
-      update( language_preset, backend, port );
-    }
-
-    void update(
-      LanguagePreset language_preset,
-      std::string backend,
-      int port
-    ) {
-      setInferenceBackend( backend );
-      setModels( language_preset );
-      setServerPort( port );
-    }
-
-  private:
-
-    void setInferenceBackend( std::string backend ) {     
-
-      if ( backend == "Paddle_CPU" ) {
-        runtime_option.UseCpu();
-        runtime_option.UsePaddleBackend(); // Paddle Inference | 0
-      }
-      else if ( backend == "Open_VINO" ) {
-        runtime_option.UseCpu();
-        runtime_option.UseOpenVINOBackend(); // OpenVINO | 1
-      }
-      else if ( backend == "ONNX_CPU" ) {
-        runtime_option.UseCpu();
-        runtime_option.UseOrtBackend(); // ONNX Runtime | 2
-      }
-      else if ( backend == "Paddle_Lite" ) {
-        runtime_option.UseCpu();    
-        runtime_option.UseLiteBackend(); // Paddle Lite | 3
-      }
-      else if ( backend == "Paddle_GPU" ) {
-        runtime_option.UseGpu();
-        runtime_option.UsePaddleBackend(); // Paddle Inference | 4
-      }
-      else if ( backend == "Paddle_GPU_Tensor_RT" ) {
-        runtime_option.UseGpu();
-        runtime_option.UsePaddleInferBackend();
-        runtime_option.paddle_infer_option.collect_trt_shape = true;
-        runtime_option.paddle_infer_option.enable_trt = true; // Paddle-TensorRT | 5
-      }
-      else if ( backend == "ONNX_GPU" ) {
-        runtime_option.UseGpu();
-        runtime_option.UseOrtBackend(); // ONNX Runtime | 6
-      }
-      else if ( backend == "Tensor_RT" ) {
-        runtime_option.UseGpu();
-        runtime_option.UseTrtBackend(); // TensorRT | 7
-      }
-    }
-
-    //! NOTE: Use setInferenceBackend before using setModels
-    void setModels( LanguagePreset language_preset ) {
-
-      language_code = language_preset.language_code;
-
-      const std::string models_dir = "./models/";
-      const std::string recognition_label_files_dir = "./recognition_label_files/";
-
-      models = getModels(
-        models_dir + language_preset.detection_model_dir,
-        models_dir + language_preset.classification_model_dir,
-        models_dir + language_preset.recognition_model_dir,
-        recognition_label_files_dir + language_preset.recognition_label_file_dir,
-        runtime_option
-      );
-    }
-
-    void setServerPort( int port ) {
-      server_port = port;
-    }
-};
-
 class SettingsManager {
 
   private:
     AppSettingsPreset app_settings_preset;
-    std::map< std::string, LanguagePreset > language_presets;
 
   public:
-    Settings settings;    
+    std::map< std::string, LanguagePreset > language_presets;
 
     SettingsManager( AppOptions app_options ) {
       initSettings( app_options );
     }
 
-    Settings getSettings() {
-      return settings;
-    }
-
-    Settings initSettings( AppOptions app_options ) {
+    void initSettings( AppOptions app_options ) {      
 
       loadAppSettingsPreset( app_options );
 
       loadLanguagePresets();
+    }
 
-      applyPreset();      
+    std::string getInferenceBackend() {
+      return app_settings_preset.inference_backend;
+    }
 
-      return settings;
+    std::string getDefaultLanguageCode() {
+      return app_settings_preset.language_code;
+    }
+
+    int getServerPort() {
+      return app_settings_preset.server_port;
     }
 
     void loadAppSettingsPreset( AppOptions& app_options ) {
@@ -216,7 +122,12 @@ class SettingsManager {
       }
       if ( app_options.server_port != 0 ) {
         app_settings_preset.server_port = app_options.server_port;
-      }      
+      }
+
+      std::cout <<"\n App settings: " << app_settings_preset.app_settings_preset_name <<                  
+                  "\n  inference_backend: " << app_settings_preset.inference_backend <<
+                  "\n  server_port: " << app_settings_preset.server_port << "\n"                 
+      << std::endl;
     }
 
     // Loads the language presets from file according to selected AppSettingsPreset
@@ -242,17 +153,10 @@ class SettingsManager {
       }      
     }
     
-    void applyPreset() {
 
-      settings.update(
-        language_presets[ app_settings_preset.language_code ],
-        app_settings_preset.inference_backend,
-        app_settings_preset.server_port
-      );
-      
-    }
+    void updateSettings( AppOptions app_options ) {
 
-    Settings& updateSettings( AppOptions app_options ) {
+      std::cout << "\n Updating settings... \n" << std::endl;      
 
       if ( app_options.app_settings_preset_name != app_settings_preset.app_settings_preset_name ) {
         loadAppSettingsPreset( app_options ); // Reload app settings preset
@@ -270,11 +174,6 @@ class SettingsManager {
         app_settings_preset.server_port = app_options.server_port;
       }
 
-      std::cout << "\n Updating settings... \n" << std::endl;
-
-      applyPreset();
-      
-      return settings;
     }
 
     
