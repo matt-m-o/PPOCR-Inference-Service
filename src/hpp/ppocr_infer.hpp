@@ -8,30 +8,148 @@
 using json = nlohmann::json;
 
 #include "../../includes/cpp-base64-2.rc.08/base64.cpp"
-
-#ifdef WIN32
-const char sep = '\\';
-#else
-const char sep = '/';
-#endif
-
-int const cls_batch_size = 1;
-int const rec_batch_size = 6;
+#include "settings.hpp"
+#include "inference_pipeline.hpp"
+#include "util.hpp"
 
 struct ContextResolution {
   int width;
   int height;
 };
 
-struct InferResult {
+struct InferenceResult {
   fastdeploy::vision::OCRResult ocr_result;
   ContextResolution context_resolution;
 };
 
+class InferenceManager {
 
-InferResult infer( const cv::Mat& image, fastdeploy::pipeline::PPOCRv4& ocr_pipeline  ) {
+    public:
+        PipelineBuilder pipeline_builder;
+        std::unordered_map< std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4> > pipelines;
+        Models models;
 
-    InferResult infer_result;
+        InferenceManager() = default;
+
+
+        // Initialize one pipeline for each available language preset (uses more RAM)
+        void initAll( SettingsManager& settings_manager ) {
+
+            for ( const auto& pair : settings_manager.language_presets ) {
+
+                LanguagePreset language_preset = pair.second;
+
+                auto pipeline = pipeline_builder.buildInferencePipeline(
+                    language_preset.detection_model_dir,
+                    language_preset.classification_model_dir,
+                    language_preset.recognition_model_dir,
+                    language_preset.recognition_label_file_dir,
+                    settings_manager.getInferenceBackend()
+                );
+
+                std::cout << "initAll. Initialized: " << pipeline->Initialized() << std::endl;
+
+                pipelines[ language_preset.language_code ] = pipeline;
+            }
+        }
+
+        // Initialize one pipeline for the current default language preset (uses less RAM)
+        void initSingle( SettingsManager& settings_manager ) {
+
+            LanguagePreset language_preset = settings_manager.language_presets[ settings_manager.getDefaultLanguageCode() ];
+                                
+            pipelines[ language_preset.language_code ] = pipeline_builder.buildInferencePipeline(
+                language_preset.detection_model_dir,
+                language_preset.classification_model_dir,
+                language_preset.recognition_model_dir,
+                language_preset.recognition_label_file_dir,
+                settings_manager.getInferenceBackend()
+            );        
+        }
+
+        std::shared_ptr< fastdeploy::pipeline::PPOCRv4 > getPipeline( std::string language_code ) {
+
+            // if ( pipelines.find( language_code ) == pipelines.end() ) {
+
+            //     std::cout << language_code << " does not exists" << std::endl;
+            // }
+
+            auto it = pipelines.find( language_code );
+
+            if ( it != pipelines.end() ) {
+
+                std::shared_ptr< fastdeploy::pipeline::PPOCRv4 > objPtr = it->second; // Retrieve the shared_ptr                
+
+                return objPtr;
+            } else {
+                std::cerr << "Key not found in the map." << std::endl;
+            }
+
+            return pipelines[ language_code ];
+        }
+
+        InferenceResult infer( const cv::Mat& image, std::string language_code ) {
+
+            auto ocr_pipeline = getPipeline( language_code );
+
+            // Access properties and call functions                
+            std::cout << "infer. Initialized: " << ocr_pipeline->Initialized() << std::endl;
+
+            InferenceResult infer_result;
+
+            // auto im = cv::imread(image_file);
+            // auto im_bak = im.clone();
+
+            fastdeploy::vision::OCRResult result;
+            if (!ocr_pipeline->Predict(image, &result)) {
+                std::cerr << "Failed to predict." << std::endl;
+                return infer_result;
+            }
+
+            // std::cout << result.Str() << std::endl;
+
+            // auto vis_im = fastdeploy::vision::VisOcr(im_bak, result);
+            // cv::imwrite("vis_result.jpg", vis_im);
+            // std::cout << "Visualized result saved in ./vis_result.jpg" << std::endl;
+            
+            ContextResolution context_resolution;
+            context_resolution.width = image.cols;
+            context_resolution.height = image.rows;
+
+            infer_result.ocr_result = result;
+            infer_result.context_resolution = context_resolution;
+
+            return infer_result;
+        }
+
+        InferenceResult inferBase64( const std::string& base64EncodedImage, std::string language_code ) {
+
+            InferenceResult result;
+
+            std::string decoded_data = base64_decode(base64EncodedImage);
+
+            std::string dec_jpg =  base64_decode(base64EncodedImage);
+            std::vector<uchar> data(dec_jpg.begin(), dec_jpg.end());
+            cv::Mat image = cv::imdecode(cv::Mat(data), 1);
+            
+
+            if (!image.empty()) {
+                // Image loaded successfully
+                // cv::imshow("Loaded Image", image);
+                // cv::waitKey(0);
+                result = infer( image, language_code );
+            } else {
+                std::cerr << "Failed to load the image." << std::endl;
+            }
+
+            return result;
+        }
+};
+
+
+InferenceResult infer( const cv::Mat& image, fastdeploy::pipeline::PPOCRv4& ocr_pipeline  ) {
+
+    InferenceResult infer_result;
 
     // auto im = cv::imread(image_file);
     // auto im_bak = im.clone();
@@ -58,9 +176,9 @@ InferResult infer( const cv::Mat& image, fastdeploy::pipeline::PPOCRv4& ocr_pipe
     return infer_result;
 }
 
-InferResult inferBase64( const std::string& base64EncodedImage, fastdeploy::pipeline::PPOCRv4& ocr_pipeline ) {
+InferenceResult inferBase64( const std::string& base64EncodedImage, fastdeploy::pipeline::PPOCRv4& ocr_pipeline ) {
 
-    InferResult result;
+    InferenceResult result;
 
     std::string decoded_data = base64_decode(base64EncodedImage);
 
@@ -81,81 +199,6 @@ InferResult inferBase64( const std::string& base64EncodedImage, fastdeploy::pipe
     return result;
 }
 
-
-struct Models {
-    fastdeploy::vision::ocr::DBDetector detectionModel;
-    fastdeploy::vision::ocr::Classifier classificationModel;
-    fastdeploy::vision::ocr::Recognizer recognitionModel;
-};
-
-Models getModels(
-    const std::string &det_model_dir,
-    const std::string &cls_model_dir,
-    const std::string &rec_model_dir,
-    const std::string &rec_label_file,  
-    const fastdeploy::RuntimeOption &option    
-) {
-    auto det_model_file = det_model_dir + sep + "inference.pdmodel";
-    auto det_params_file = det_model_dir + sep + "inference.pdiparams";
-
-    auto cls_model_file = cls_model_dir + sep + "inference.pdmodel";
-    auto cls_params_file = cls_model_dir + sep + "inference.pdiparams";
-
-    auto rec_model_file = rec_model_dir + sep + "inference.pdmodel";
-    auto rec_params_file = rec_model_dir + sep + "inference.pdiparams";
-
-    auto det_option = option;
-    auto cls_option = option;
-    auto rec_option = option;
-
-
-    // The cls and rec model can inference a batch of images now.
-    // User could initialize the inference batch size and set them after create
-    // PP-OCR model.
-    // int cls_batch_size = 1;
-    // int rec_batch_size = 6;
-
-    
-    // If use TRT backend, the dynamic shape will be set as follow.
-    // We recommend that users set the length and height of the detection model to
-    // a multiple of 32.
-    // We also recommend that users set the Trt input shape as follow.
-    // det_option.SetTrtInputShape("x", {1, 3, 64, 64}, {1, 3, 640, 640},
-    //                             {1, 3, 960, 960});
-    // cls_option.SetTrtInputShape("x", {1, 3, 48, 10}, {cls_batch_size, 3, 48, 320},
-    //                             {cls_batch_size, 3, 48, 1024});
-    // rec_option.SetTrtInputShape("x", {1, 3, 48, 10}, {rec_batch_size, 3, 48, 320},
-    //                             {rec_batch_size, 3, 48, 2304});
-
-
-    auto det_model = fastdeploy::vision::ocr::DBDetector(
-        det_model_file, det_params_file, det_option);
-    auto cls_model = fastdeploy::vision::ocr::Classifier(
-        cls_model_file, cls_params_file, cls_option);
-    auto rec_model = fastdeploy::vision::ocr::Recognizer(
-        rec_model_file, rec_params_file, rec_label_file, rec_option);
-
-
-    assert(det_model.Initialized());
-    assert(cls_model.Initialized());
-    assert(rec_model.Initialized());
-
-
-    det_model.GetPreprocessor().SetMaxSideLen(960);
-    det_model.GetPostprocessor().SetDetDBThresh(0.3);
-    det_model.GetPostprocessor().SetDetDBBoxThresh(0.6);
-    det_model.GetPostprocessor().SetDetDBUnclipRatio(1.5);
-    det_model.GetPostprocessor().SetDetDBScoreMode("slow");
-    det_model.GetPostprocessor().SetUseDilation(0);
-    cls_model.GetPostprocessor().SetClsThresh(0.9);
-
-    Models models;
-    models.detectionModel = det_model;
-    models.classificationModel = cls_model;
-    models.recognitionModel = rec_model;
-
-    return models;
-}
 
 fastdeploy::pipeline::PPOCRv4 initPipeline(
     fastdeploy::vision::ocr::DBDetector &det_model, //const std::string &det_model_dir,
@@ -195,7 +238,7 @@ fastdeploy::pipeline::PPOCRv4 initPipeline(
 }
 
 
-nlohmann::json ocrResultToJson( const InferResult& infer_result ) {
+nlohmann::json ocrResultToJson( const InferenceResult& infer_result ) {
 
   auto ocrResult = infer_result.ocr_result;
   auto context_resolution = infer_result.context_resolution;

@@ -1,5 +1,17 @@
+#ifndef UTIL_HPP
+#define UTIL_HPP
+
+#include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+
+#ifdef WIN32
+const char sep = '\\';
+#else
+const char sep = '/';
+#endif
 
 nlohmann::json readJsonFile( std::string const path ) {
   std::ifstream file( path );
@@ -8,3 +20,5 @@ nlohmann::json readJsonFile( std::string const path ) {
   
   return json_data;
 }
+
+#endif

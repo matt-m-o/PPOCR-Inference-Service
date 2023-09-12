@@ -4,6 +4,7 @@
         "ja": "japanese_v4"
     },
     "language_code": "ja",
+    "initialize_all_language_presets": false,
     "inference_backend" : "ONNX_CPU",
     "port": 12345
 }

@@ -12,7 +12,6 @@ using json = nlohmann::json;
 using namespace httplib;
 
 
-
 std::string dump_headers(const Headers &headers) {
   std::string s;
   char buf[BUFSIZ];
@@ -64,15 +63,15 @@ std::string log(const Request &req, const Response &res) {
 }
 
 
-
+/* 
 void reinitializePipeline( fastdeploy::pipeline::PPOCRv4& pipeline, Settings& settings ) {
   pipeline = initPipeline(
-    settings.models.detectionModel,
+    settings.models.detection_model,
     settings.models.classificationModel,
     settings.models.recognitionModel
     // settings
   );
-}
+} */
 
 int main( int argc, char *argv[] ) {  
 
@@ -82,14 +81,9 @@ int main( int argc, char *argv[] ) {
 
   SettingsManager settings_manager( app_options );
 
-  Settings settings = settings_manager.getSettings();
-  
-  fastdeploy::pipeline::PPOCRv4 ppocr_v4_pipeline = initPipeline(
-    settings.models.detectionModel,
-    settings.models.classificationModel,
-    settings.models.recognitionModel
-    // settings
-  );
+  InferenceManager inference_manager;
+
+  inference_manager.initAll( settings_manager );
 
 
   // SERVER
@@ -116,9 +110,12 @@ int main( int argc, char *argv[] ) {
 
     auto bodyJson = json::parse(body);
 
-    std::string base64EncodedImage = bodyJson["base64Image"].get<std::string>();      
+    std::string base64EncodedImage = bodyJson["base64Image"].get<std::string>();
+    std::string language_code = bodyJson["language_code"].get<std::string>();
 
-    InferResult const result = inferBase64( base64EncodedImage, ppocr_v4_pipeline );
+    std::cout << "\n Request language_code: " << language_code << std::endl;
+
+    InferenceResult const result = inference_manager.inferBase64( base64EncodedImage, language_code );
 
     auto resultJson = ocrResultToJson( result );
 
@@ -146,9 +143,9 @@ int main( int argc, char *argv[] ) {
       if ( bodyJson["inference_backend"].is_string() )
         app_options.inference_backend = bodyJson["inference_backend"];
       
-      settings_manager.updateSettings( app_options );
+      /* settings_manager.updateSettings( app_options );
 
-      reinitializePipeline( ppocr_v4_pipeline, settings_manager.settings );
+      reinitializePipeline( ppocr_v4_pipeline, settings_manager.settings ); */
 
       res.set_content( "", "application/json" );
     }    
@@ -180,8 +177,8 @@ int main( int argc, char *argv[] ) {
   //   printf("%s", log(req, res).c_str());
   // });
   
-  std::cout << "\n Listening on port: " << settings.server_port << std::endl;
-  svr.listen("0.0.0.0", settings.server_port);
+  std::cout << "\n Listening on port: " << settings_manager.getServerPort() << std::endl;
+  svr.listen( "0.0.0.0", settings_manager.getServerPort() );
   
   return 0;
 }
