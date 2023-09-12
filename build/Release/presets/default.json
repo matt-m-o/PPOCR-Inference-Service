@@ -1,7 +1,8 @@
 {
     "name": "default",
     "language_presets": {
-        "ja": "japanese_v4"
+        "ja": "japanese_v4",
+		"en": "english_v4"
     },
     "language_code": "ja",
     "initialize_all_language_presets": false,

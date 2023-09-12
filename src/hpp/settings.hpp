@@ -153,30 +153,6 @@ class SettingsManager {
       }      
     }
     
-
-    void updateSettings( AppOptions app_options ) {
-
-      std::cout << "\n Updating settings... \n" << std::endl;      
-
-      if ( app_options.app_settings_preset_name != app_settings_preset.app_settings_preset_name ) {
-        loadAppSettingsPreset( app_options ); // Reload app settings preset
-        loadLanguagePresets();
-      }
-
-      // Overwriting preset options by args options
-      if ( app_options.language_code != "default" ) {
-        app_settings_preset.language_code = app_options.language_code;
-      }
-      if ( app_options.inference_backend != "default" ) {
-        app_settings_preset.inference_backend = app_options.inference_backend;
-      }
-      if ( app_options.server_port != 0 ) {
-        app_settings_preset.server_port = app_options.server_port;
-      }
-
-    }
-
-    
     std::vector< std::string > getAvailableLanguages() {
 
       std::vector< std::string > languages_vector;

@@ -110,10 +110,10 @@ int main( int argc, char *argv[] ) {
 
     auto bodyJson = json::parse(body);
 
-    std::string base64EncodedImage = bodyJson["base64Image"].get<std::string>();
     std::string language_code = bodyJson["language_code"].get<std::string>();
+    std::string base64EncodedImage = bodyJson["base64Image"].get<std::string>();
 
-    std::cout << "\n Request language_code: " << language_code << std::endl;
+    // std::cout << "\n Request language_code: " << language_code << std::endl;
 
     InferenceResult const result = inference_manager.inferBase64( base64EncodedImage, language_code );
 
@@ -122,7 +122,7 @@ int main( int argc, char *argv[] ) {
     res.set_content( resultJson.dump(), "application/json" );
   });
 
-  svr.Post("/settings", [&]( const Request &req, Response &res,
+  /* svr.Post("/settings", [&]( const Request &req, Response &res,
                              const ContentReader &content_reader) {
     std::string body;
     content_reader( [&]( const char *data, size_t data_length ) {
@@ -143,14 +143,14 @@ int main( int argc, char *argv[] ) {
       if ( bodyJson["inference_backend"].is_string() )
         app_options.inference_backend = bodyJson["inference_backend"];
       
-      /* settings_manager.updateSettings( app_options );
+      // settings_manager.updateSettings( app_options );
 
-      reinitializePipeline( ppocr_v4_pipeline, settings_manager.settings ); */
+      // reinitializePipeline( ppocr_v4_pipeline, settings_manager.settings );
 
       res.set_content( "", "application/json" );
     }    
     
-  });
+  }); */
 
   svr.Get("/supported-languages", [&](const Request & /*req*/, Response &res) {
 
