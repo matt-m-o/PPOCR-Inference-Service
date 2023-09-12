@@ -1,5 +1,5 @@
-#include "hpp/settings.hpp";
-#include "hpp/ppocr_infer.hpp"
+#include "hpp/inference_manager.hpp"
+#include "hpp/settings_manager.hpp"
 #include <chrono>
 #include <cstdio>
 #include <httplib.h>
@@ -62,16 +62,6 @@ std::string log(const Request &req, const Response &res) {
   return s;
 }
 
-
-/* 
-void reinitializePipeline( fastdeploy::pipeline::PPOCRv4& pipeline, Settings& settings ) {
-  pipeline = initPipeline(
-    settings.models.detection_model,
-    settings.models.classificationModel,
-    settings.models.recognitionModel
-    // settings
-  );
-} */
 
 int main( int argc, char *argv[] ) {  
 

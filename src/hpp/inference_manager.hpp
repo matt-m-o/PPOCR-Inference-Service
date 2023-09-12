@@ -1,5 +1,5 @@
-#ifndef PPOCR_INFER_H
-#define PPOCR_INFER_H
+#ifndef INFERENCE_MANAGER_HPP
+#define INFERENCE_MANAGER_HPP
 
 // #include "settings.hpp"
 #include <iostream>
@@ -8,8 +8,8 @@
 using json = nlohmann::json;
 
 #include "../../includes/cpp-base64-2.rc.08/base64.cpp"
-#include "settings.hpp"
-#include "inference_pipeline.hpp"
+#include "settings_manager.hpp"
+#include "inference_pipeline_builder.hpp"
 #include "util.hpp"
 
 struct ContextResolution {
@@ -25,7 +25,7 @@ struct InferenceResult {
 class InferenceManager {
 
     private:
-        PipelineBuilder pipeline_builder;
+        InferencePipelineBuilder pipeline_builder;
         std::unordered_map< std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4> > pipelines;
 
     public:

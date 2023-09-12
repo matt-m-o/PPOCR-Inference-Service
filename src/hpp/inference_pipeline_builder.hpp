@@ -1,22 +1,22 @@
-#ifndef INFERENCE_PIPELINE_HPP
-#define INFERENCE_PIPELINE_HPP
+#ifndef INFERENCE_PIPELINE_BUILDER_HPP
+#define INFERENCE_PIPELINE_BUILDER_HPP
 
 #include <fastdeploy/vision.h>
-#include "inference_models.hpp"
+#include "inference_models_manager.hpp"
 #include "util.hpp"
 
 int const cls_batch_size = 1;
 int const rec_batch_size = 6;
 
 
-class PipelineBuilder {
+class InferencePipelineBuilder {
 
 private:
     fastdeploy::RuntimeOption runtime_option;
     InferenceModelsManager inference_models_manager;    
 
 public:
-    PipelineBuilder() = default;
+    InferencePipelineBuilder() = default;
     
     void generatePipelineBackend( std::string backend ) {        
 

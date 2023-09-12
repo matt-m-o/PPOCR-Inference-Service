@@ -1,5 +1,5 @@
-#ifndef INFERENCE_MODELS_HPP
-#define INFERENCE_MODELS_HPP
+#ifndef INFERENCE_MODELS_MANAGER_HPP
+#define INFERENCE_MODELS_MANAGER_HPP
 
 #include <fastdeploy/vision.h>
 #include "util.hpp"

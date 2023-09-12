@@ -1,5 +1,5 @@
-#ifndef SETTINGS_HPP
-#define SETTINGS_HPP
+#ifndef SETTINGS_MANAGER_HPP
+#define SETTINGS_MANAGER_HPP
 
 // #include <string>
 // #include "ppocr_infer.hpp"
