@@ -122,7 +122,7 @@ public:
         // pipeline2.SetClsBatchSize(cls_batch_size);
         // pipeline2.SetRecBatchSize(rec_batch_size);
 
-        std::cout << "Initialized: " << pipeline->Initialized() << std::endl;
+        // std::cout << "Initialized: " << pipeline->Initialized() << std::endl;
         // std::cout << "Initialized: " << pipeline2.Initialized() << std::endl;
 
         if (!pipeline->Initialized()) {

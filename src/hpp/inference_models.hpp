@@ -13,6 +13,7 @@ struct Models {
 
 
 class InferenceModelsManager {
+
 private:
     std::unordered_map< std::string, std::shared_ptr< fastdeploy::vision::ocr::DBDetector > > detection_models;
     std::unordered_map< std::string, std::shared_ptr< fastdeploy::vision::ocr::Classifier > > classification_models;
@@ -70,9 +71,7 @@ public:
 
         if ( model != detection_models.end() ) {
             return model->second.get(); // Getting variable from pointer
-        }
-
-        std::cout <<"\n loadDetectionModel \n"<< std::endl;
+        }        
         
         auto det_model_file = det_model_dir + sep + "inference.pdmodel";
         auto det_params_file = det_model_dir + sep + "inference.pdiparams";
@@ -113,9 +112,7 @@ public:
 
         assert( classification_models[cls_model_dir]->Initialized() );
 
-        classification_models[cls_model_dir]->GetPostprocessor().SetClsThresh(0.9);
-
-        // classification_models[cls_model_dir] = cls_model;
+        classification_models[cls_model_dir]->GetPostprocessor().SetClsThresh(0.9);        
 
         return classification_models[cls_model_dir].get();
     }
@@ -140,9 +137,7 @@ public:
         rec_model_file, rec_params_file, rec_label_file, rec_option);
         
 
-        assert( recognition_models[rec_model_dir]->Initialized() );
-
-        // recognition_models[rec_model_dir] = rec_model;
+        assert( recognition_models[rec_model_dir]->Initialized() );        
 
         return recognition_models[rec_model_dir].get();
     }
