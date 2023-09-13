@@ -67,6 +67,8 @@ int main( int argc, char *argv[] ) {
 
   // OCR 
 
+  std::cout << "Notice: this application is experimental!!! \n" << std::endl;
+
   AppOptions app_options = handleAppArgs( argc, argv );
 
   SettingsManager settings_manager( app_options );
@@ -111,36 +113,6 @@ int main( int argc, char *argv[] ) {
 
     res.set_content( resultJson.dump(), "application/json" );
   });
-
-  /* svr.Post("/settings", [&]( const Request &req, Response &res,
-                             const ContentReader &content_reader) {
-    std::string body;
-    content_reader( [&]( const char *data, size_t data_length ) {
-      body.append(data, data_length);
-      return true;
-    });
-
-    json bodyJson = json::parse(body);
-
-    if ( bodyJson.empty() == false ) {            
-
-      if ( bodyJson["app_settings_preset_name"].is_string() )
-        app_options.app_settings_preset_name = bodyJson["app_settings_preset_name"];
-      
-      if ( bodyJson["language_code"].is_string() )
-        app_options.language_code = bodyJson["language_code"];
-      
-      if ( bodyJson["inference_backend"].is_string() )
-        app_options.inference_backend = bodyJson["inference_backend"];
-      
-      // settings_manager.updateSettings( app_options );
-
-      // reinitializePipeline( ppocr_v4_pipeline, settings_manager.settings );
-
-      res.set_content( "", "application/json" );
-    }    
-    
-  }); */
 
   svr.Get("/supported-languages", [&](const Request & /*req*/, Response &res) {
 
