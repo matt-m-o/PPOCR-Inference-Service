@@ -1,5 +1,5 @@
-#include "hpp/inference_manager.hpp"
-#include "hpp/settings_manager.hpp"
+#include "../hpp/inference_manager.hpp"
+#include "../hpp/settings_manager.hpp"
 #include <chrono>
 #include <cstdio>
 #include <httplib.h>
