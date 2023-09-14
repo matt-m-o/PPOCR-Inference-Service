@@ -3,11 +3,17 @@ syntax = "proto3";
 package ppocr_service;
 
 service PPOCRInference {  
-  rpc Recognize (RecognizeRequest) returns (RecognizeResponse) {}
+  rpc RecognizeBytes (RecognizeBytesRequest) returns (RecognizeGenericResponse) {}
+  rpc RecognizeBase64 (RecognizeBase64Request) returns (RecognizeGenericResponse) {}
   rpc SupportedLanguages (SupportedLanguagesRequest) returns (SupportedLanguagesResponse) {}
 }
 
-message RecognizeRequest {
+message RecognizeBytesRequest {
+  string id = 1;
+  string language_code = 2;
+  bytes image_bytes = 3;
+}
+message RecognizeBase64Request {
   string id = 1;
   string language_code = 2;
   string base64_image = 3;
@@ -33,7 +39,7 @@ message ContextResolution {
   int32 width = 1;
   int32 height = 2;
 }
-message RecognizeResponse {
+message RecognizeGenericResponse {
   string id = 1;
   repeated Result results = 2;
   ContextResolution context_resolution = 3;

@@ -138,6 +138,26 @@ class InferenceManager {
 
             return result;
         }
+
+        InferenceResult inferBufferString( const std::string& image_str, std::string language_code ) {
+
+            InferenceResult result;
+
+            std::vector<uchar> data(image_str.begin(), image_str.end());
+            cv::Mat image = cv::imdecode( data, cv::IMREAD_COLOR );
+            
+
+            if ( !image.empty() ) {
+                // Image loaded successfully
+                // cv::imshow("Loaded Image", image);
+                // cv::waitKey(0);
+                result = infer( image, language_code );
+            } else {
+                std::cerr << "Failed to load the image." << std::endl;
+            }
+
+            return result;
+        }
 };
 
 

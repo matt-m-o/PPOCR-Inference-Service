@@ -13,14 +13,15 @@ using json = nlohmann::json;
 #include <grpcpp/health_check_service_interface.h>
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include "ppocr_service.grpc.pb.h"
-
+#include "grpc_helpers.hpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using ppocr_service::RecognizeRequest;
-using ppocr_service::RecognizeResponse;
+using ppocr_service::RecognizeBase64Request;
+using ppocr_service::RecognizeGenericResponse;
+using ppocr_service::RecognizeBytesRequest;
 using ppocr_service::SupportedLanguagesRequest;
 using ppocr_service::SupportedLanguagesResponse;
 using ppocr_service::PPOCRInference;
@@ -65,10 +66,10 @@ class PPOCRService final : public PPOCRInference::Service {
       return Status::OK;
     }
 
-    Status Recognize(
+    Status RecognizeBase64(
       ServerContext* context,
-      const RecognizeRequest* request,
-      RecognizeResponse* response
+      const RecognizeBase64Request* request,
+      RecognizeGenericResponse* response
     ) override {    
 
       InferenceResult const inference_result = inference_manager.inferBase64(
@@ -78,51 +79,28 @@ class PPOCRService final : public PPOCRInference::Service {
 
       response->set_id( request->id() );
 
-      auto context_resolution = response->mutable_context_resolution();
-      context_resolution->set_width( inference_result.context_resolution.width );
-      context_resolution->set_height( inference_result.context_resolution.height );
+      inferenceResultGRPCHelper( inference_result, response );
+
+      return Status::OK;
+    }
+
+    Status RecognizeBytes(
+      ServerContext* context,
+      const RecognizeBytesRequest* request,
+      RecognizeGenericResponse* response
+    ) override {    
+
+      std::string image_str = request->image_bytes();
       
-      int item_idx = 0;
-      for ( const std::string& text : inference_result.ocr_result.text ) {
+      InferenceResult const inference_result = inference_manager.inferBufferString(
+        request->image_bytes(),
+        request->language_code()
+      );
 
-        auto new_result = response->add_results();
-        new_result->set_text(text);
-        new_result->set_score( inference_result.ocr_result.cls_scores[ item_idx ] );
+      response->set_id( request->id() );
 
-        auto new_box = new_result->mutable_box();
-
-        auto const box = inference_result.ocr_result.boxes[ item_idx ];
-        int box_vertex_idx = 0;
-        for ( int b_axis_idx = 0; b_axis_idx < 8; ++b_axis_idx ) {
-        
-          const int x = box[ b_axis_idx ];
-          const int y = box[ b_axis_idx + 1 ];
-
-          ppocr_service::Vertex* vertex;
-
-          if ( box_vertex_idx == 0 ) {
-            vertex = new_box->mutable_top_left();
-          }
-          else if ( box_vertex_idx == 1 ) {
-            vertex = new_box->mutable_top_right();
-          }
-          else if ( box_vertex_idx == 2 ) {
-            vertex = new_box->mutable_bottom_right();
-          }
-          else if ( box_vertex_idx == 3 ) {
-            vertex = new_box->mutable_bottom_left();
-          }
-
-          vertex->set_x(x);
-          vertex->set_y(y);
-
-          box_vertex_idx++; // [ 1 ... 4 ]
-          b_axis_idx++; // [ 1 ... 8]
-        }
-
-        item_idx++;
-      }
-
+      inferenceResultGRPCHelper( inference_result, response );
+      
       return Status::OK;
     }
 };
