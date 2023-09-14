@@ -21,3 +21,6 @@ build/**/*.tlog
 /build/**/*.vcxproj
 /build/**/*.stamp
 /build/**/*.depend
+/build/**/*.cc
+/build/**/*.cpp
+/build/**/*.h

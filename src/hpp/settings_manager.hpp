@@ -73,6 +73,8 @@ class SettingsManager {
   public:
     std::map< std::string, LanguagePreset > language_presets;
 
+    SettingsManager() = default;
+
     SettingsManager( AppOptions app_options ) {
       initSettings( app_options );
     }

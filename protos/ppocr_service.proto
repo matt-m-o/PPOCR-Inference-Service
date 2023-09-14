@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package ppocr_service;
+
+service PPOCRInference {  
+  rpc Recognize (RecognizeRequest) returns (RecognizeResponse) {}
+  rpc SupportedLanguages (SupportedLanguagesRequest) returns (SupportedLanguagesResponse) {}
+}
+
+message RecognizeRequest {
+  string id = 1;
+  string language_code = 2;
+  string base64_image = 3;
+}
+
+
+message Vertex {
+  int32 x = 1;
+  int32 y = 2;
+}
+message Box {
+  Vertex bottom_left = 1;
+  Vertex bottom_right = 2;
+  Vertex top_left = 3;
+  Vertex top_right = 4;
+}
+message Result {
+  string text = 1;
+  float score = 2;
+  Box box = 3;
+}
+message ContextResolution {
+  int32 width = 1;
+  int32 height = 2;
+}
+message RecognizeResponse {
+  string id = 1;
+  repeated Result results = 2;
+  ContextResolution context_resolution = 3;
+}
+
+
+
+message SupportedLanguagesRequest {
+}
+message SupportedLanguagesResponse {
+  repeated string language_codes = 1;
+}
