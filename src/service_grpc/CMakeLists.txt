@@ -4,7 +4,7 @@ project(PPOCR-Inference-Service)
 set (VCPKG_HOME $ENV{VCPKG_HOME}) #IMPORTANT: change this to where your vcpkg exists.
 set (CMAKE_TOOLCHAIN_FILE "${VCPKG_HOME}/scripts/buildsystems/vcpkg.cmake")
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_BUILD_TYPE Debug)
+set (CMAKE_BUILD_TYPE Release) # Debug / Release
 
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
