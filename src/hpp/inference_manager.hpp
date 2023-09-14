@@ -32,9 +32,12 @@ class InferenceManager {
         InferenceManager() = default;
 
         // Initialize one pipeline for each available language preset (uses more RAM)
-        void initAll( SettingsManager& settings_manager ) {
+        void initAll(
+            const std::map< std::string, LanguagePreset > language_presets,
+            const std::string& inference_backend
+        ) {
 
-            for ( const auto& pair : settings_manager.language_presets ) {
+            for ( const auto& pair : language_presets ) {
 
                 LanguagePreset language_preset = pair.second;
 
@@ -43,7 +46,7 @@ class InferenceManager {
                     language_preset.classification_model_dir,
                     language_preset.recognition_model_dir,
                     language_preset.recognition_label_file_dir,
-                    settings_manager.getInferenceBackend()
+                    inference_backend
                 );
 
                 // std::cout << "initAll. Initialized: " << pipeline->Initialized() << std::endl;
@@ -53,18 +56,18 @@ class InferenceManager {
         }
 
         // Initialize one pipeline for the current default language preset (uses less RAM)
-        void initSingle( SettingsManager& settings_manager ) {
+        // void initSingle( SettingsManager& settings_manager ) {
 
-            LanguagePreset language_preset = settings_manager.language_presets[ settings_manager.getDefaultLanguageCode() ];
+        //     LanguagePreset language_preset = settings_manager.language_presets[ settings_manager.getDefaultLanguageCode() ];
                                 
-            pipelines[ language_preset.language_code ] = pipeline_builder.buildInferencePipeline(
-                language_preset.detection_model_dir,
-                language_preset.classification_model_dir,
-                language_preset.recognition_model_dir,
-                language_preset.recognition_label_file_dir,
-                settings_manager.getInferenceBackend()
-            );        
-        }
+        //     pipelines[ language_preset.language_code ] = pipeline_builder.buildInferencePipeline(
+        //         language_preset.detection_model_dir,
+        //         language_preset.classification_model_dir,
+        //         language_preset.recognition_model_dir,
+        //         language_preset.recognition_label_file_dir,
+        //         settings_manager.getInferenceBackend()
+        //     );        
+        // }
 
         std::shared_ptr< fastdeploy::pipeline::PPOCRv4 > getPipeline( std::string language_code ) {            
 
@@ -168,8 +171,8 @@ nlohmann::json ocrResultToJson( const InferenceResult& infer_result ) {
       const std::string boxVertexName = boxVerticesIndices[ boxVertexIdx ];
       itemJson["box"][boxVertexName] = { {"x", x}, { "y", y } };
 
-      boxVertexIdx++; // [ 1 ... 4 ]
-      bAxisIdx++; // [ 1 ... 8]
+      boxVertexIdx++; // [ 0 ... 3 ]
+      bAxisIdx++; // [ 0 ... 7]
     }
 
 

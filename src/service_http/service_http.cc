@@ -75,7 +75,10 @@ int main( int argc, char *argv[] ) {
 
   InferenceManager inference_manager;
 
-  inference_manager.initAll( settings_manager );
+  inference_manager.initAll(
+    settings_manager.language_presets,
+    settings_manager.getInferenceBackend()
+  );
 
 
   // SERVER
@@ -102,6 +105,7 @@ int main( int argc, char *argv[] ) {
 
     auto bodyJson = json::parse(body);
 
+    std::string id = bodyJson["id"].get<std::string>();
     std::string language_code = bodyJson["language_code"].get<std::string>();
     std::string base64EncodedImage = bodyJson["base64Image"].get<std::string>();
 
@@ -110,6 +114,7 @@ int main( int argc, char *argv[] ) {
     InferenceResult const result = inference_manager.inferBase64( base64EncodedImage, language_code );
 
     auto resultJson = ocrResultToJson( result );
+    resultJson["id"] = id;
 
     res.set_content( resultJson.dump(), "application/json" );
   });
