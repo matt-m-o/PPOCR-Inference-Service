@@ -40,7 +40,8 @@ class PPOCRService final : public PPOCRInference::Service {
       settings_manager.initSettings( app_options );
       inference_manager.initAll(
         settings_manager.language_presets,
-        settings_manager.getInferenceBackend()
+        settings_manager.getInferenceBackend(),
+        settings_manager.getCpuThreads()
       );
     }
 

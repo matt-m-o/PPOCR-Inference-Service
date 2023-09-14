@@ -22,6 +22,7 @@ struct AppSettingsPreset {
   std::string language_code;
   bool initialize_all_language_presets = false;
   std::string inference_backend;
+  int cpu_threads = 0;
   int server_port;
 };
 
@@ -97,6 +98,9 @@ class SettingsManager {
     int getServerPort() {
       return app_settings_preset.server_port;
     }
+    int getCpuThreads() {
+      return app_settings_preset.cpu_threads;
+    }
 
     void loadAppSettingsPreset( AppOptions& app_options ) {
       
@@ -106,7 +110,8 @@ class SettingsManager {
 
       app_settings_preset.inference_backend = app_settings_preset_json["inference_backend"].get< std::string >();
       app_settings_preset.server_port = app_settings_preset_json["port"].get<int>();
-      app_settings_preset.language_code = app_settings_preset_json["language_code"].get< std::string >();      
+      app_settings_preset.language_code = app_settings_preset_json["language_code"].get< std::string >();
+      app_settings_preset.cpu_threads = app_settings_preset_json["cpu_threads"].get< int >();
 
       if ( app_settings_preset_json["language_presets"].is_null() )
         return;
@@ -128,7 +133,8 @@ class SettingsManager {
 
       std::cout <<"\n App settings: " << app_settings_preset.app_settings_preset_name <<                  
                   "\n  inference_backend: " << app_settings_preset.inference_backend <<
-                  "\n  server_port: " << app_settings_preset.server_port << "\n"                 
+                  "\n  server_port: " << app_settings_preset.server_port << "\n"
+                  "\n  cpu_threads: " << app_settings_preset.cpu_threads << "\n"
       << std::endl;
     }
 

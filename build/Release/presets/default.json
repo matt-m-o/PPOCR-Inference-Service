@@ -2,10 +2,11 @@
     "name": "default",
     "language_presets": {
         "ja": "japanese_v4",
-		"en": "english_v4"
+        "en": "english_v4"
     },
     "language_code": "ja",
     "initialize_all_language_presets": false,
-    "inference_backend" : "ONNX_CPU",
+    "inference_backend" : "Open_VINO",
+    "cpu_threads": 16,
     "port": 12345
 }

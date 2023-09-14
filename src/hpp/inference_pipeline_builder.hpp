@@ -18,7 +18,10 @@ private:
 public:
     InferencePipelineBuilder() = default;
     
-    void generatePipelineBackend( std::string backend ) {        
+    void generatePipelineBackend(
+        std::string backend,
+        int cpu_threads = 0
+    ) {
 
         if ( backend == "Paddle_CPU" ) {
             runtime_option.UseCpu();
@@ -26,11 +29,11 @@ public:
         }
         else if ( backend == "Open_VINO" ) {
             runtime_option.UseCpu();
-            runtime_option.UseOpenVINOBackend(); // OpenVINO | 1
+            runtime_option.UseOpenVINOBackend(); // OpenVINO | 1            
         }
         else if ( backend == "ONNX_CPU" ) {
             runtime_option.UseCpu();
-            runtime_option.UseOrtBackend(); // ONNX Runtime | 2
+            runtime_option.UseOrtBackend(); // ONNX Runtime | 2            
         }
         else if ( backend == "Paddle_Lite" ) {
             runtime_option.UseCpu();    
@@ -53,7 +56,12 @@ public:
         else if ( backend == "Tensor_RT" ) {
             runtime_option.UseGpu();
             runtime_option.UseTrtBackend(); // TensorRT | 7
-        }        
+        }
+
+        if ( cpu_threads > 0 && backend != "ONNX_CPU" ) { // Change cpu_threads while using ONNX can cause problems
+            std::cout << "SetCpuThreadNum: " << cpu_threads << std::endl;
+            runtime_option.SetCpuThreadNum(cpu_threads);
+        }
     }
 
     
@@ -62,10 +70,11 @@ public:
         const std::string &cls_model_dir,
         const std::string &rec_model_dir,
         const std::string &rec_label_file,
-        const std::string backend = "ONNX_CPU"
+        const std::string backend = "ONNX_CPU",
+        const int cpu_threads = 0
     ) {
 
-        generatePipelineBackend( backend );
+        generatePipelineBackend( backend, cpu_threads );
 
         const std::string models_dir = "./models/";
         const std::string recognition_label_files_dir = "./recognition_label_files/";
@@ -107,8 +116,7 @@ public:
             models.recognition_model
 
 
-        );
-
+        );        
         
         // Set inference batch size for cls model and rec model, the value could be -1
         // and 1 to positive infinity.

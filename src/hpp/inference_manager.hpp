@@ -34,7 +34,8 @@ class InferenceManager {
         // Initialize one pipeline for each available language preset (uses more RAM)
         void initAll(
             const std::map< std::string, LanguagePreset > language_presets,
-            const std::string& inference_backend
+            const std::string& inference_backend,
+            const int cpu_threads = 0
         ) {
 
             for ( const auto& pair : language_presets ) {
@@ -46,7 +47,8 @@ class InferenceManager {
                     language_preset.classification_model_dir,
                     language_preset.recognition_model_dir,
                     language_preset.recognition_label_file_dir,
-                    inference_backend
+                    inference_backend,
+                    cpu_threads
                 );
 
                 // std::cout << "initAll. Initialized: " << pipeline->Initialized() << std::endl;
@@ -113,6 +115,8 @@ class InferenceManager {
             infer_result.ocr_result = result;
             infer_result.context_resolution = context_resolution;
 
+            // ocr_pipeline->ReleaseReusedBuffer();
+
             return infer_result;
         }
 
@@ -131,7 +135,7 @@ class InferenceManager {
                 // Image loaded successfully
                 // cv::imshow("Loaded Image", image);
                 // cv::waitKey(0);
-                result = infer( image, language_code );
+                return infer( image, language_code );
             } else {
                 std::cerr << "Failed to load the image." << std::endl;
             }
@@ -151,7 +155,7 @@ class InferenceManager {
                 // Image loaded successfully
                 // cv::imshow("Loaded Image", image);
                 // cv::waitKey(0);
-                result = infer( image, language_code );
+                return infer( image, language_code );
             } else {
                 std::cerr << "Failed to load the image." << std::endl;
             }
