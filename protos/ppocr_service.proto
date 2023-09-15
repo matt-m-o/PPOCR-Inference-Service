@@ -3,9 +3,9 @@ syntax = "proto3";
 package ppocr_service;
 
 service PPOCRInference {  
-  rpc RecognizeBytes (RecognizeBytesRequest) returns (RecognizeGenericResponse) {}
-  rpc RecognizeBase64 (RecognizeBase64Request) returns (RecognizeGenericResponse) {}
-  rpc SupportedLanguages (SupportedLanguagesRequest) returns (SupportedLanguagesResponse) {}
+  rpc RecognizeBytes (RecognizeBytesRequest) returns (RecognizeDefaultResponse) {}
+  rpc RecognizeBase64 (RecognizeBase64Request) returns (RecognizeDefaultResponse) {}
+  rpc GetSupportedLanguages (GetSupportedLanguagesRequest) returns (GetSupportedLanguagesResponse) {}
 }
 
 message RecognizeBytesRequest {
@@ -39,7 +39,7 @@ message ContextResolution {
   int32 width = 1;
   int32 height = 2;
 }
-message RecognizeGenericResponse {
+message RecognizeDefaultResponse {
   string id = 1;
   repeated Result results = 2;
   ContextResolution context_resolution = 3;
@@ -47,8 +47,8 @@ message RecognizeGenericResponse {
 
 
 
-message SupportedLanguagesRequest {
+message GetSupportedLanguagesRequest {
 }
-message SupportedLanguagesResponse {
+message GetSupportedLanguagesResponse {
   repeated string language_codes = 1;
 }

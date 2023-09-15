@@ -4,11 +4,11 @@
 #include "../hpp/inference_manager.hpp"
 #include "ppocr_service.grpc.pb.h"
 
-using ppocr_service::RecognizeGenericResponse;
+using ppocr_service::RecognizeDefaultResponse;
 
 void inferenceResultGRPCHelper(
     const InferenceResult& inference_result,
-    RecognizeGenericResponse* response
+    RecognizeDefaultResponse* response
 ) {
 
     auto context_resolution = response->mutable_context_resolution();

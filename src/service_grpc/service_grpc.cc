@@ -20,10 +20,10 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 using ppocr_service::RecognizeBase64Request;
-using ppocr_service::RecognizeGenericResponse;
+using ppocr_service::RecognizeDefaultResponse;
 using ppocr_service::RecognizeBytesRequest;
-using ppocr_service::SupportedLanguagesRequest;
-using ppocr_service::SupportedLanguagesResponse;
+using ppocr_service::GetSupportedLanguagesRequest;
+using ppocr_service::GetSupportedLanguagesResponse;
 using ppocr_service::PPOCRInference;
 
 
@@ -53,10 +53,10 @@ class PPOCRService final : public PPOCRInference::Service {
       return settings_manager.getServerPort();
     }
 
-    Status SupportedLanguages(
+    Status GetSupportedLanguages(
       ServerContext* context,
-      const SupportedLanguagesRequest* request,
-      SupportedLanguagesResponse* response
+      const GetSupportedLanguagesRequest* request,
+      GetSupportedLanguagesResponse* response
     ) override {
 
       for ( const std::string& language_code : settings_manager.getAvailableLanguages() ) {
@@ -70,7 +70,7 @@ class PPOCRService final : public PPOCRInference::Service {
     Status RecognizeBase64(
       ServerContext* context,
       const RecognizeBase64Request* request,
-      RecognizeGenericResponse* response
+      RecognizeDefaultResponse* response
     ) override {    
 
       InferenceResult const inference_result = inference_manager.inferBase64(
@@ -88,7 +88,7 @@ class PPOCRService final : public PPOCRInference::Service {
     Status RecognizeBytes(
       ServerContext* context,
       const RecognizeBytesRequest* request,
-      RecognizeGenericResponse* response
+      RecognizeDefaultResponse* response
     ) override {    
 
       std::string image_str = request->image_bytes();
