@@ -12,22 +12,22 @@ using json = nlohmann::json;
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
-#include "ppocr_service.grpc.pb.h"
+#include "ocr_service.grpc.pb.h"
 #include "grpc_helpers.hpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using ppocr_service::RecognizeBase64Request;
-using ppocr_service::RecognizeDefaultResponse;
-using ppocr_service::RecognizeBytesRequest;
-using ppocr_service::GetSupportedLanguagesRequest;
-using ppocr_service::GetSupportedLanguagesResponse;
-using ppocr_service::PPOCRInference;
+using ocr_service::RecognizeBase64Request;
+using ocr_service::RecognizeDefaultResponse;
+using ocr_service::RecognizeBytesRequest;
+using ocr_service::GetSupportedLanguagesRequest;
+using ocr_service::GetSupportedLanguagesResponse;
+using ocr_service::OCRService;
 
 
-class PPOCRService final : public PPOCRInference::Service {
+class PPOCRService final : public OCRService::Service {
 
   private:
     SettingsManager settings_manager;

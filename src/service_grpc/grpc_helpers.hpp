@@ -2,9 +2,9 @@
 #define GRPC_HELPERS_HPP
 
 #include "../hpp/inference_manager.hpp"
-#include "ppocr_service.grpc.pb.h"
+#include "ocr_service.grpc.pb.h"
 
-using ppocr_service::RecognizeDefaultResponse;
+using ocr_service::RecognizeDefaultResponse;
 
 void inferenceResultGRPCHelper(
     const InferenceResult& inference_result,
@@ -31,7 +31,7 @@ void inferenceResultGRPCHelper(
             const int x = box[ b_axis_idx ];
             const int y = box[ b_axis_idx + 1 ];
 
-            ppocr_service::Vertex* vertex;
+            ocr_service::Vertex* vertex;
 
             if ( box_vertex_idx == 0 ) {
             vertex = new_box->mutable_top_left();
