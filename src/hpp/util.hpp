@@ -21,4 +21,8 @@ nlohmann::json readJsonFile( std::string const path ) {
   return json_data;
 }
 
+void printJsonData( json& data ) {  
+  std::cout << "[INFO-JSON]:" << data.dump() << std::endl;
+}
+
 #endif

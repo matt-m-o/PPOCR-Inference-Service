@@ -8,6 +8,7 @@ using json = nlohmann::json;
 #include <iostream>
 #include <memory>
 #include <string>
+#include <windows.h> // !
 
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
@@ -123,7 +124,9 @@ void RunServer( AppOptions& app_options ) {
   builder.RegisterService(&service);
   // Finally assemble the server.
   std::unique_ptr<Server> server( builder.BuildAndStart() );
-  std::cout << "Server listening on " << server_address << std::endl;
+
+  nlohmann::json server_address_json = { { "server_address", server_address } };    
+  printJsonData( server_address_json );
 
   // Wait for the server to shutdown. Note that some other thread must be
   // responsible for shutting down the server for this call to ever return.
