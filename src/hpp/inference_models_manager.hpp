@@ -27,7 +27,8 @@ public:
         const std::string &cls_model_dir,
         const std::string &rec_model_dir,
         const std::string &rec_label_file,
-        const fastdeploy::RuntimeOption &runtime_option
+        const fastdeploy::RuntimeOption &runtime_option,
+        const int max_side_length = 1920 // Maximum image width
     ) {
 
         std::cout <<"\n  Models: " <<
@@ -55,7 +56,7 @@ public:
                                     {rec_batch_size, 3, 48, 2304}); */
 
         Models models;
-        models.detection_model = loadDetectionModel( det_model_dir, runtime_option );
+        models.detection_model = loadDetectionModel( det_model_dir, runtime_option, max_side_length );
         models.classification_model = loadClassificationModel( cls_model_dir, runtime_option );
         models.recognition_model = loadRecognitionModel( rec_model_dir, rec_label_file, runtime_option );
 
@@ -64,7 +65,8 @@ public:
 
     fastdeploy::vision::ocr::DBDetector* loadDetectionModel(
         const std::string &det_model_dir,
-        const fastdeploy::RuntimeOption &runtime_option
+        const fastdeploy::RuntimeOption &runtime_option,
+        const int max_side_length = 1920 // Maximum image width
     ) {
 
         auto model = detection_models.find( det_model_dir );
@@ -81,8 +83,8 @@ public:
         
 
         assert( detection_models[det_model_dir]->Initialized() );
-
-        detection_models[det_model_dir]->GetPreprocessor().SetMaxSideLen(960);
+        
+        detection_models[det_model_dir]->GetPreprocessor().SetMaxSideLen( max_side_length );
         detection_models[det_model_dir]->GetPostprocessor().SetDetDBThresh(0.3);
         detection_models[det_model_dir]->GetPostprocessor().SetDetDBBoxThresh(0.6);
         detection_models[det_model_dir]->GetPostprocessor().SetDetDBUnclipRatio(1.5);

@@ -1,1 +1,1 @@
-.\ppocr_infer_service_http.exe "default" "ja" "54321"
+.\ppocr_infer_service_grpc.exe "default" "ja" "54321"

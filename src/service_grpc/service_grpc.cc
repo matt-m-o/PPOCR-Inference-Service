@@ -42,7 +42,8 @@ class PPOCRService final : public OCRService::Service {
       inference_manager.initAll(
         settings_manager.language_presets,
         settings_manager.getInferenceBackend(),
-        settings_manager.getCpuThreads()
+        settings_manager.getCpuThreads(),
+        settings_manager.getMaxSideLength()
       );
     }
 

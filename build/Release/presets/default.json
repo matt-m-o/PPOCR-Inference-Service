@@ -8,5 +8,6 @@
     "initialize_all_language_presets": false,
     "inference_backend" : "Open_VINO",
     "cpu_threads": 16,
-    "port": 12345
+    "port": 12345,
+	"max_side_length": 1920
 }

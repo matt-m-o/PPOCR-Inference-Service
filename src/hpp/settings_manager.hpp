@@ -24,6 +24,7 @@ struct AppSettingsPreset {
   std::string inference_backend;
   int cpu_threads = 0;
   int server_port;
+  int max_side_length = 1920; // Maximum image width
 };
 
 // Language preset JSON
@@ -101,6 +102,9 @@ class SettingsManager {
     int getCpuThreads() {
       return app_settings_preset.cpu_threads;
     }
+    int getMaxSideLength() {
+      return app_settings_preset.max_side_length;
+    }
 
     void loadAppSettingsPreset( AppOptions& app_options ) {
       
@@ -112,6 +116,7 @@ class SettingsManager {
       app_settings_preset.server_port = app_settings_preset_json["port"].get<int>();
       app_settings_preset.language_code = app_settings_preset_json["language_code"].get< std::string >();
       app_settings_preset.cpu_threads = app_settings_preset_json["cpu_threads"].get< int >();
+      app_settings_preset.max_side_length = app_settings_preset_json["max_side_length"].get< int >();
 
       if ( app_settings_preset_json["language_presets"].is_null() )
         return;

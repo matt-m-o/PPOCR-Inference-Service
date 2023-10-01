@@ -13,7 +13,8 @@ class InferencePipelineBuilder {
 
 private:
     fastdeploy::RuntimeOption runtime_option;
-    InferenceModelsManager inference_models_manager;    
+    InferenceModelsManager inference_models_manager;
+    // std::map<std::string, std::vector<int64_t>> shape_info;
 
 public:
     InferencePipelineBuilder() = default;
@@ -29,7 +30,10 @@ public:
         }
         else if ( backend == "Open_VINO" ) {
             runtime_option.UseCpu();
-            runtime_option.UseOpenVINOBackend(); // OpenVINO | 1            
+            runtime_option.UseOpenVINOBackend(); // OpenVINO | 1
+            
+            // shape_info["x"] = { 1, 3, -1, 960 }; // Replace "input_tensor_name" with the actual input tensor name        
+            // runtime_option.openvino_option.SetShapeInfo( shape_info );     
         }
         else if ( backend == "ONNX_CPU" ) {
             runtime_option.UseCpu();
@@ -71,7 +75,8 @@ public:
         const std::string &rec_model_dir,
         const std::string &rec_label_file,
         const std::string backend = "ONNX_CPU",
-        const int cpu_threads = 0
+        const int cpu_threads = 0,
+        const int max_side_length = 1920 // Maximum image width
     ) {
 
         generatePipelineBackend( backend, cpu_threads );
@@ -84,7 +89,8 @@ public:
             models_dir + cls_model_dir,
             models_dir + rec_model_dir,
             recognition_label_files_dir + rec_label_file, 
-            runtime_option
+            runtime_option,
+            max_side_length
         );
 
         // auto detection_model = inference_models_manager.loadDetectionModel( models_dir + det_model_dir, runtime_option );
