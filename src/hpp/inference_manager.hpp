@@ -36,7 +36,7 @@ class InferenceManager {
             const std::map< std::string, LanguagePreset > language_presets,
             const std::string& inference_backend,
             const int cpu_threads = 0,
-            const int max_side_length = 1920
+            const int max_image_width = 1920
         ) {
 
             for ( const auto& pair : language_presets ) {
@@ -50,7 +50,7 @@ class InferenceManager {
                     language_preset.recognition_label_file_dir,
                     inference_backend,
                     cpu_threads,
-                    max_side_length
+                    max_image_width
                 );
 
                 // std::cout << "initAll. Initialized: " << pipeline->Initialized() << std::endl;

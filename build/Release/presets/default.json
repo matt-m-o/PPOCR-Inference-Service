@@ -9,5 +9,5 @@
     "inference_backend" : "Open_VINO",
     "cpu_threads": 16,
     "port": 12345,
-	"max_side_length": 1920
+	"max_image_width": 1920
 }

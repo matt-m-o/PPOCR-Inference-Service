@@ -24,7 +24,7 @@ struct AppSettingsPreset {
   std::string inference_backend;
   int cpu_threads = 0;
   int server_port;
-  int max_side_length = 1920; // Maximum image width
+  int max_image_width = 1920; // Maximum image width
 };
 
 // Language preset JSON
@@ -102,8 +102,8 @@ class SettingsManager {
     int getCpuThreads() {
       return app_settings_preset.cpu_threads;
     }
-    int getMaxSideLength() {
-      return app_settings_preset.max_side_length;
+    int getMaxImageWidth() {
+      return app_settings_preset.max_image_width;
     }
 
     void loadAppSettingsPreset( AppOptions& app_options ) {
@@ -116,7 +116,7 @@ class SettingsManager {
       app_settings_preset.server_port = app_settings_preset_json["port"].get<int>();
       app_settings_preset.language_code = app_settings_preset_json["language_code"].get< std::string >();
       app_settings_preset.cpu_threads = app_settings_preset_json["cpu_threads"].get< int >();
-      app_settings_preset.max_side_length = app_settings_preset_json["max_side_length"].get< int >();
+      app_settings_preset.max_image_width = app_settings_preset_json["max_image_width"].get< int >();
 
       if ( app_settings_preset_json["language_presets"].is_null() )
         return;
@@ -177,8 +177,8 @@ class SettingsManager {
       return languages_vector;
     }
 
-    void setMaxSideLength( int value ) {
-      app_settings_preset.max_side_length = value;
+    void setMaxImageWidth( int value ) {
+      app_settings_preset.max_image_width = value;
     }
 
     void setCpuThreads( int value ) {
@@ -203,7 +203,7 @@ class SettingsManager {
       settings_preset_json["inference_backend"] = app_settings_preset.inference_backend;
       settings_preset_json["cpu_threads"] = app_settings_preset.cpu_threads;
       settings_preset_json["port"] = app_settings_preset.server_port;
-      settings_preset_json["max_side_length"] = app_settings_preset.max_side_length;      
+      settings_preset_json["max_image_width"] = app_settings_preset.max_image_width;      
       
       std::cout << "settings_preset_json..." << std::endl;
       std::cout << std::setw(4) << settings_preset_json << std::endl;      

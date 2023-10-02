@@ -20,11 +20,17 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
+
 using ocr_service::RecognizeBase64Request;
 using ocr_service::RecognizeDefaultResponse;
 using ocr_service::RecognizeBytesRequest;
+
 using ocr_service::GetSupportedLanguagesRequest;
 using ocr_service::GetSupportedLanguagesResponse;
+
+using ocr_service::UpdateSettingsPresetRequest;
+using ocr_service::UpdateSettingsPresetResponse;
+
 using ocr_service::OCRService;
 
 
@@ -43,7 +49,7 @@ class PPOCRService final : public OCRService::Service {
         settings_manager.language_presets,
         settings_manager.getInferenceBackend(),
         settings_manager.getCpuThreads(),
-        settings_manager.getMaxSideLength()
+        settings_manager.getMaxImageWidth()
       );
     }
 
@@ -104,6 +110,26 @@ class PPOCRService final : public OCRService::Service {
 
       inferenceResultGRPCHelper( inference_result, response );
       
+      return Status::OK;
+    }
+
+    Status UpdateSettingsPreset(
+      ServerContext* context,
+      const UpdateSettingsPresetRequest* request,
+      UpdateSettingsPresetResponse* response
+    ) override {
+      
+      settings_manager.setMaxImageWidth( request->max_image_width() );
+      settings_manager.setCpuThreads( request->cpu_threads() );
+
+      settings_manager.saveAppSettingsPreset();
+
+      std::cout << "UpdateSettingsPreset..." << std::endl;
+      std::cout << "max_image_width: " << request->max_image_width() << std::endl;
+      std::cout << "cpu_threads: " << request->cpu_threads() << std::endl;
+
+      response->set_success( true );
+
       return Status::OK;
     }
 };
