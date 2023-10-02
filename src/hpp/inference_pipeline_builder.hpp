@@ -63,7 +63,7 @@ public:
         }
 
         if ( cpu_threads > 0 && backend != "ONNX_CPU" ) { // Change cpu_threads while using ONNX can cause problems
-            std::cout << "SetCpuThreadNum: " << cpu_threads << std::endl;
+            // std::cout << "SetCpuThreadNum: " << cpu_threads << std::endl;
             runtime_option.SetCpuThreadNum(cpu_threads);
         }
     }

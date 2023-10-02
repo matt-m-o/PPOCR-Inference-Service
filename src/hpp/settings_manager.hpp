@@ -177,6 +177,39 @@ class SettingsManager {
       return languages_vector;
     }
 
+    void setMaxSideLength( int value ) {
+      app_settings_preset.max_side_length = value;
+    }
+
+    void setCpuThreads( int value ) {
+      app_settings_preset.cpu_threads = value;
+    }
+
+    void saveAppSettingsPreset() {
+
+      std::string file_path = "./presets/";
+      std::string file_name = app_settings_preset.app_settings_preset_name + ".json";
+
+      nlohmann::ordered_json settings_preset_json;
+      settings_preset_json["name"] = app_settings_preset.app_settings_preset_name;
+      settings_preset_json["language_presets"] = json();
+            
+      for (const auto& pair : app_settings_preset.language_presets) {        
+        settings_preset_json["language_presets"][pair.first] = pair.second;
+      }
+
+      settings_preset_json["language_code"] = app_settings_preset.language_code;
+      settings_preset_json["initialize_all_language_presets"] = app_settings_preset.initialize_all_language_presets;
+      settings_preset_json["inference_backend"] = app_settings_preset.inference_backend;
+      settings_preset_json["cpu_threads"] = app_settings_preset.cpu_threads;
+      settings_preset_json["port"] = app_settings_preset.server_port;
+      settings_preset_json["max_side_length"] = app_settings_preset.max_side_length;      
+      
+      std::cout << "settings_preset_json..." << std::endl;
+      std::cout << std::setw(4) << settings_preset_json << std::endl;      
+
+      writeJsonFile( settings_preset_json, file_path + file_name );
+    }
 };
 
 
