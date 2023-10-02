@@ -5,7 +5,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
-
+using ordered_json = nlohmann::ordered_json;
 
 #ifdef WIN32
 const char sep = '\\';
@@ -19,6 +19,12 @@ nlohmann::json readJsonFile( std::string const path ) {
   file.close();
   
   return json_data;
+}
+
+void writeJsonFile( ordered_json& data, std::string& path ) {
+
+  std::ofstream o( path );
+  o << std::setw(4) << data << std::endl;
 }
 
 void printJsonData( json& data ) {  
