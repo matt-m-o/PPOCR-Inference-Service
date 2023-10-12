@@ -1,7 +1,8 @@
 # PPOCR Inference Service
 
 A simple and experimental OCR service powered by PaddleOCR. <br>
-This is not ready for production, use it with caution.
+This is not ready for production, use it with caution.<br>
+Primary developed to be used in the [YomiNinja](https://github.com/matt-m-o/) project.
 
 ### Quick start
 
@@ -48,3 +49,6 @@ Example: default.json
 7. Run "ppocr_infer_service_grpc.exe"
 
 8. Import the "./protos/ocr_service.proto" from the source code into your programming language of preference or Postman.
+
+### Acknowledgments
+- https://github.com/PaddlePaddle/FastDeploy
