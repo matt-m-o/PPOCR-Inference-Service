@@ -1,6 +1,7 @@
 # PPOCR Inference Service
 
 A simple and experimental OCR service powered by PaddleOCR. <br>
+This is not ready for production, use it with caution.
 
 ### Quick start
 
