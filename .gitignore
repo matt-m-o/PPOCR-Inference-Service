@@ -24,3 +24,4 @@ build/**/*.tlog
 /build/**/*.cc
 /build/**/*.cpp
 /build/**/*.h
+build/Release/LICENSE
