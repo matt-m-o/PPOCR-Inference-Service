@@ -10,7 +10,8 @@ You need Windows 10 or 11 and [VCRedist Runtimes](https://www.techpowerup.com/do
 1. [Download](https://github.com/matt-m-o/PPOCR-Inference-Service/releases) the latest build.
 2. [Download](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.7/doc/doc_en/models_list_en.md) detection, angle classification, recognition models and recognition labels for the languages you need.
 3. Extract and place models in the "./models" directory.
-4. Define configuration presets for each language in the "./presets/language_presets" directory.
+4. Put the recognition labels (*_dict.txt) in the "./recognition_label_files" directory.
+5. Define configuration presets for each language in the "./presets/language_presets" directory.
 
 Example: english_v4.json
 ```json
@@ -23,7 +24,7 @@ Example: english_v4.json
   "recognition_label_file_dir" : "dict_en.txt"
 }
 ```
-5. Define the application configuration preset in the "./presets" directory.
+6. Define the application configuration preset in the "./presets" directory.
 
 Example: default.json
 ```json
@@ -44,6 +45,6 @@ Example: default.json
 ** Currently "language_code" and "initialize_all_language_presets" do not take effect. <br>
 ** "inference_backend" can take any of the following values: Paddle_CPU, Open_VINO, ONNX_CPU, Paddle_Lite.
 
-6. Run "ppocr_infer_service_grpc.exe"
+7. Run "ppocr_infer_service_grpc.exe"
 
-7. Import the protos/ocr_service.proto from the source code into your programming language of preference or Postman.
+8. Import the "./protos/ocr_service.proto" from the source code into your programming language of preference or Postman.

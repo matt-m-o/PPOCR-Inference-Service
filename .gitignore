@@ -25,3 +25,5 @@ build/**/*.tlog
 /build/**/*.cpp
 /build/**/*.h
 build/Release/LICENSE
+/**/*.zip
+/**/*.rar
