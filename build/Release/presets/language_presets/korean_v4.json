@@ -1,0 +1,8 @@
+{
+    "name": "korean_v4",
+    "language_code": "ko",
+    "detection_model_dir": "en_PP-OCRv3_det_infer",
+    "classification_model_dir" : "ch_ppocr_mobile_v2.0_cls_infer",
+    "recognition_model_dir" : "korean_PP-OCRv4_rec_infer",
+    "recognition_label_file_dir" : "korean_dict.txt"
+}
