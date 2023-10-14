@@ -28,8 +28,25 @@ class InferenceManager {
         InferencePipelineBuilder pipeline_builder;
         std::unordered_map< std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4> > pipelines;
 
+        std::map< std::string, LanguagePreset > language_presets;
+        std::string inference_backend = "";
+        int cpu_threads = 0;
+        int max_image_width = 1920;
+
     public:
         InferenceManager() = default;
+
+        void init(
+            const std::map< std::string, LanguagePreset > language_presets,
+            const std::string inference_backend,
+            const int cpu_threads = 0,
+            const int max_image_width = 1920
+        ) {
+            this->language_presets = language_presets;
+            this->inference_backend = inference_backend;
+            this->cpu_threads = cpu_threads;
+            this->max_image_width = max_image_width;
+        }
 
         // Initialize one pipeline for each available language preset (uses more RAM)
         void initAll(
@@ -39,41 +56,53 @@ class InferenceManager {
             const int max_image_width = 1920
         ) {
 
-            for ( const auto& pair : language_presets ) {
+            init(
+                language_presets,
+                inference_backend,
+                cpu_threads,
+                max_image_width
+            );
 
-                LanguagePreset language_preset = pair.second;
+            for ( const auto& pair : language_presets ) {                
 
-                auto pipeline = pipeline_builder.buildInferencePipeline(
-                    language_preset.detection_model_dir,
-                    language_preset.classification_model_dir,
-                    language_preset.recognition_model_dir,
-                    language_preset.recognition_label_file_dir,
-                    inference_backend,
-                    cpu_threads,
-                    max_image_width
-                );
-
-                // std::cout << "initAll. Initialized: " << pipeline->Initialized() << std::endl;
-
-                pipelines[ language_preset.language_code ] = pipeline;
+                initPipeline( pair.first );
             }
         }
 
-        // Initialize one pipeline for the current default language preset (uses less RAM)
-        // void initSingle( SettingsManager& settings_manager ) {
+        void initPipeline( const std::string language_code ) {
 
-        //     LanguagePreset language_preset = settings_manager.language_presets[ settings_manager.getDefaultLanguageCode() ];
-                                
-        //     pipelines[ language_preset.language_code ] = pipeline_builder.buildInferencePipeline(
-        //         language_preset.detection_model_dir,
-        //         language_preset.classification_model_dir,
-        //         language_preset.recognition_model_dir,
-        //         language_preset.recognition_label_file_dir,
-        //         settings_manager.getInferenceBackend()
-        //     );        
-        // }
+            auto pipeline_it = pipelines.find( language_code );
 
-        std::shared_ptr< fastdeploy::pipeline::PPOCRv4 > getPipeline( std::string language_code ) {            
+            if ( pipeline_it != pipelines.end() ) {
+                std::cout << "Pipeline for [" << language_code << "] already exists!" << std::endl;
+                return;
+            }
+
+            auto language_preset_it = this->language_presets.find( language_code );
+
+            if ( language_preset_it == language_presets.end() ) {
+                std::cout << "Language preset for [" << language_code << "] does not exists!" << std::endl;
+                return;
+            }
+            
+            auto language_preset = language_preset_it->second;
+
+            auto new_pipeline = pipeline_builder.buildInferencePipeline(
+                language_preset.detection_model_dir,
+                language_preset.classification_model_dir,
+                language_preset.recognition_model_dir,
+                language_preset.recognition_label_file_dir,
+                inference_backend,
+                cpu_threads,
+                max_image_width
+            );
+
+            pipelines[ language_preset.language_code ] = new_pipeline;
+        }        
+
+        std::shared_ptr< fastdeploy::pipeline::PPOCRv4 > getPipeline( std::string language_code ) {
+
+            initPipeline( language_code );
 
             auto it = pipelines.find( language_code );
 

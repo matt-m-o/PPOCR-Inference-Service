@@ -45,7 +45,7 @@ class PPOCRService final : public OCRService::Service {
     PPOCRService( AppOptions app_options ) {
 
       settings_manager.initSettings( app_options );
-      inference_manager.initAll(
+      inference_manager.init(
         settings_manager.language_presets,
         settings_manager.getInferenceBackend(),
         settings_manager.getCpuThreads(),

@@ -2,12 +2,14 @@
     "name": "default",
     "language_presets": {
         "ja": "japanese_v4",
-        "en": "english_v4"
+        "en": "english_v4",
+		"ch": "chinese_v4",
+		"ko": "korean_v4"
     },
     "language_code": "ja",
     "initialize_all_language_presets": false,
     "inference_backend" : "Open_VINO",
     "cpu_threads": 16,
     "port": 12345,
-	"max_image_width": 1920
+	"max_image_width": 1600
 }
