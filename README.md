@@ -44,7 +44,7 @@ Example: default.json
 }
 ```
 ** Currently "language_code" and "initialize_all_language_presets" do not take effect. <br>
-** "inference_backend" can take any of the following values: Paddle_CPU, Open_VINO, ONNX_CPU, Paddle_Lite.
+** "inference_backend" can take any of the following values: Paddle_CPU, Open_VINO, ONNX_CPU.
 
 7. Run "ppocr_infer_service_grpc.exe"
 
