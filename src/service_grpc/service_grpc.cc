@@ -121,12 +121,14 @@ class PPOCRService final : public OCRService::Service {
       
       settings_manager.setMaxImageWidth( request->max_image_width() );
       settings_manager.setCpuThreads( request->cpu_threads() );
+      settings_manager.setInferenceBackend( request->inference_runtime() );
 
       settings_manager.saveAppSettingsPreset();
 
       std::cout << "UpdateSettingsPreset..." << std::endl;
       std::cout << "max_image_width: " << request->max_image_width() << std::endl;
       std::cout << "cpu_threads: " << request->cpu_threads() << std::endl;
+      std::cout << "inference_runtime: " << request->inference_runtime() << std::endl;
 
       response->set_success( true );
 
@@ -144,12 +146,15 @@ void RunServer( AppOptions& app_options ) {
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
   ServerBuilder builder;
+
   // Listen on the given address without any authentication mechanism.
   builder.AddListeningPort( server_address, grpc::InsecureServerCredentials() );
+
   // Register "service" as the instance through which we'll communicate with
   // clients. In this case it corresponds to an *synchronous* service.
   builder.RegisterService(&service);
   builder.SetMaxReceiveMessageSize( 15 * 1024 * 1024 );
+
   // Finally assemble the server.
   std::unique_ptr<Server> server( builder.BuildAndStart() );
 
