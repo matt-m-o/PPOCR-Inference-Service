@@ -1,0 +1,1 @@
+cmake .. -DFASTDEPLOY_INSTALL_DIR=${PWD}/../sdk/fastdeploy-linux-x64-1.0.7

@@ -8,7 +8,6 @@ using json = nlohmann::json;
 #include <iostream>
 #include <memory>
 #include <string>
-#include <windows.h> // !
 
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
