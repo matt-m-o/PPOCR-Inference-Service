@@ -25,5 +25,8 @@ build/**/*.tlog
 /build/**/*.cpp
 /build/**/*.h
 build/Release/LICENSE
+/build/Release/lib/*
+build/Release/include
+/build/**/ppocr_infer_service_grpc
 /**/*.zip
 /**/*.rar
