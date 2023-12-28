@@ -142,6 +142,12 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Targets greeter_[async_](client|server)
 
+
+if (UNIX)
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+endif()
+
 add_executable( ppocr_infer_service_grpc ${CMAKE_SOURCE_DIR}/src/service_grpc/service_grpc.cc
     ${hw_proto_srcs}
     ${hw_grpc_srcs})
@@ -153,6 +159,14 @@ target_link_libraries( ppocr_infer_service_grpc ${FASTDEPLOY_LIBS} )
 target_link_libraries( ppocr_infer_service_grpc ${NLOHMANN_LIB_INCLUDE_DIR} )
 target_link_libraries( ppocr_infer_service_grpc ${BASE64_LIB_INCLUDE_DIR} )
 
+if (UNIX)
+  install( TARGETS ppocr_infer_service_grpc
+    DESTINATION ${CMAKE_SOURCE_DIR}/build/Release
+  )
+  set_target_properties( ppocr_infer_service_grpc PROPERTIES
+    INSTALL_RPATH $ORIGIN/lib/
+  )
+endif()
 
 # Executable
 # add_executable(ppocr_infer_service_grpc ${CMAKE_SOURCE_DIR}/src/service_grpc/service_grpc.cc)

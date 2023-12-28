@@ -185,6 +185,10 @@ class SettingsManager {
       app_settings_preset.cpu_threads = value;
     }
 
+    void setInferenceBackend( std::string value ) {
+      app_settings_preset.inference_backend = value;
+    }
+
     void saveAppSettingsPreset() {
 
       std::string file_path = "./presets/";
