@@ -132,7 +132,7 @@ class InferenceManager {
             if ( !ocr_pipeline->Predict(image, &result) ) {
                 std::cerr << "Failed to predict." << std::endl;
                 return infer_result;
-            }            
+            }
 
             // auto im_bak = im.clone();
             // auto vis_im = fastdeploy::vision::VisOcr(im_bak, result);
@@ -143,8 +143,13 @@ class InferenceManager {
             context_resolution.width = image.cols;
             context_resolution.height = image.rows;
 
-            infer_result.ocr_result = result;
             infer_result.context_resolution = context_resolution;
+
+            if ( result.boxes.empty() ) {
+                return infer_result;
+            }
+
+            infer_result.ocr_result = result;
 
             // ocr_pipeline->ReleaseReusedBuffer();
 
