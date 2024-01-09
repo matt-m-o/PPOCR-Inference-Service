@@ -77,8 +77,7 @@ int main( int argc, char *argv[] ) {
 
   inference_manager.initAll(
     settings_manager.language_presets,
-    settings_manager.getInferenceBackend(),
-    settings_manager.getCpuThreads()
+    settings_manager.getAppSettingsPreset()
   );
 
 

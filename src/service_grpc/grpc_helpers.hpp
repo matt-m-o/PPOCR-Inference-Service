@@ -20,7 +20,9 @@ void inferenceResultGRPCHelper(
 
         auto new_result = response->add_results();
         new_result->set_text(text);
-        new_result->set_score( inference_result.ocr_result.cls_scores[ item_idx ] );
+        new_result->set_recognition_score( inference_result.ocr_result.rec_scores[ item_idx ] );
+        new_result->set_classification_score( inference_result.ocr_result.cls_scores[ item_idx ] ); // Text direction
+        new_result->set_classification_label( inference_result.ocr_result.cls_labels[ item_idx ] ); // Text direction
 
         auto new_box = new_result->mutable_box();
 
@@ -34,16 +36,16 @@ void inferenceResultGRPCHelper(
             ocr_service::Vertex* vertex;
 
             if ( box_vertex_idx == 0 ) {
-            vertex = new_box->mutable_top_left();
+                vertex = new_box->mutable_top_left();
             }
             else if ( box_vertex_idx == 1 ) {
-            vertex = new_box->mutable_top_right();
+                vertex = new_box->mutable_top_right();
             }
             else if ( box_vertex_idx == 2 ) {
-            vertex = new_box->mutable_bottom_right();
+                vertex = new_box->mutable_bottom_right();
             }
             else if ( box_vertex_idx == 3 ) {
-            vertex = new_box->mutable_bottom_left();
+                vertex = new_box->mutable_bottom_left();
             }
 
             vertex->set_x(x);
