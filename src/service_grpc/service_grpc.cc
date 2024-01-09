@@ -27,8 +27,9 @@ using ocr_service::RecognizeBytesRequest;
 using ocr_service::GetSupportedLanguagesRequest;
 using ocr_service::GetSupportedLanguagesResponse;
 
-using ocr_service::UpdateSettingsPresetRequest;
-using ocr_service::UpdateSettingsPresetResponse;
+using ocr_service::UpdatePpOcrSettingsRequest;
+using ocr_service::UpdateSettingsResponse;
+
 
 using ocr_service::OCRService;
 
@@ -46,9 +47,7 @@ class PPOCRService final : public OCRService::Service {
       settings_manager.initSettings( app_options );
       inference_manager.init(
         settings_manager.language_presets,
-        settings_manager.getInferenceBackend(),
-        settings_manager.getCpuThreads(),
-        settings_manager.getMaxImageWidth()
+        settings_manager.getAppSettingsPreset()
       );
     }
 
@@ -112,22 +111,25 @@ class PPOCRService final : public OCRService::Service {
       return Status::OK;
     }
 
-    Status UpdateSettingsPreset(
+    Status UpdatePpOcrSettings(
       ServerContext* context,
-      const UpdateSettingsPresetRequest* request,
-      UpdateSettingsPresetResponse* response
+      const UpdatePpOcrSettingsRequest* request,
+      UpdateSettingsResponse* response
     ) override {
+
+      UpdateAppSettingsPresetInput settingsUpdate;
+      settingsUpdate.inference_backend = request->inference_runtime();
+      settingsUpdate.cpu_threads = request->cpu_threads();
+      settingsUpdate.max_image_width = request->max_image_width();
+      settingsUpdate.det_db_thresh = request->det_db_thresh();
+      settingsUpdate.det_db_box_thresh = request->det_db_box_thresh();
+      settingsUpdate.det_db_unclip_ratio = request->det_db_unclip_ratio();
+      settingsUpdate.det_db_score_mode = request->det_db_score_mode();
+      settingsUpdate.use_dilation = request->use_dilation();
+      settingsUpdate.cls_thresh = request->cls_thresh();
       
-      settings_manager.setMaxImageWidth( request->max_image_width() );
-      settings_manager.setCpuThreads( request->cpu_threads() );
-      settings_manager.setInferenceBackend( request->inference_runtime() );
-
+      settings_manager.updateSettingsPreset( settingsUpdate );
       settings_manager.saveAppSettingsPreset();
-
-      std::cout << "UpdateSettingsPreset..." << std::endl;
-      std::cout << "max_image_width: " << request->max_image_width() << std::endl;
-      std::cout << "cpu_threads: " << request->cpu_threads() << std::endl;
-      std::cout << "inference_runtime: " << request->inference_runtime() << std::endl;
 
       response->set_success( true );
 

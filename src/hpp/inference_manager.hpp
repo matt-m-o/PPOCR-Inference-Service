@@ -29,38 +29,28 @@ class InferenceManager {
         std::unordered_map< std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4> > pipelines;
 
         std::map< std::string, LanguagePreset > language_presets;
-        std::string inference_backend = "";
-        int cpu_threads = 0;
-        int max_image_width = 1920;
+        AppSettingsPreset app_settings;
 
     public:
         InferenceManager() = default;
 
         void init(
             const std::map< std::string, LanguagePreset > language_presets,
-            const std::string inference_backend,
-            const int cpu_threads = 0,
-            const int max_image_width = 1920
+            const AppSettingsPreset app_settings
         ) {
             this->language_presets = language_presets;
-            this->inference_backend = inference_backend;
-            this->cpu_threads = cpu_threads;
-            this->max_image_width = max_image_width;
+            this->app_settings = app_settings;
         }
 
         // Initialize one pipeline for each available language preset (uses more RAM)
         void initAll(
             const std::map< std::string, LanguagePreset > language_presets,
-            const std::string& inference_backend,
-            const int cpu_threads = 0,
-            const int max_image_width = 1920
+            const AppSettingsPreset app_settings
         ) {
 
             init(
                 language_presets,
-                inference_backend,
-                cpu_threads,
-                max_image_width
+                this->app_settings
             );
 
             for ( const auto& pair : language_presets ) {                
@@ -92,9 +82,7 @@ class InferenceManager {
                 language_preset.classification_model_dir,
                 language_preset.recognition_model_dir,
                 language_preset.recognition_label_file_dir,
-                inference_backend,
-                cpu_threads,
-                max_image_width
+                app_settings
             );
 
             pipelines[ language_preset.language_code ] = new_pipeline;
