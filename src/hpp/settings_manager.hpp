@@ -9,6 +9,7 @@ using json = nlohmann::json;
 
 // Main input for changing settings
 struct AppOptions {
+  std::string app_settings_preset_root = "./presets/";
   std::string app_settings_preset_name = "default";
   std::string language_code = "default";
   std::string inference_backend = "default"; //! "Paddle_CPU", "Open_VINO", "ONNX_CPU", "Paddle_Lite", "Paddle_GPU", "Paddle_GPU_Tensor_RT", "ONNX_GPU", "Tensor_RT"
@@ -63,7 +64,7 @@ AppOptions handleAppArgs( int argc, char *argv[] ) {
   AppOptions app_options;  
 
   if (argc == 1) {
-    std::cout << "Args usage: [app_settings_preset] [language_code] [server_port] \n"
+    std::cout << "Args usage: [app_settings_preset_root] [app_settings_preset] [server_port] \n"
                  "e.g.: default ja 12345 \n"
                 //  "e.g default ch \n"
               << std::endl;
@@ -72,12 +73,12 @@ AppOptions handleAppArgs( int argc, char *argv[] ) {
   }
 
   if ( argc > 1 ) {
-    app_options.app_settings_preset_name = argv[1];
+    app_options.app_settings_preset_root = argv[1];
   }
   if ( argc > 2 ) {
-    app_options.language_code = argv[2];
+    app_options.app_settings_preset_name = argv[2];
   }
-  if ( argc > 3 ) {
+  if ( argc > 3 ) { 
     app_options.server_port = std::atoi( argv[3] );
   }
 
@@ -90,6 +91,7 @@ class SettingsManager {
 
   private:
     AppSettingsPreset app_settings_preset;
+    AppOptions app_options;
 
   public:
     std::map< std::string, LanguagePreset > language_presets;
@@ -97,12 +99,13 @@ class SettingsManager {
     SettingsManager() = default;
 
     SettingsManager( AppOptions app_options ) {
-      initSettings( app_options );
+      this->app_options = app_options;
+      initSettings();
     }
 
-    void initSettings( AppOptions app_options ) {      
+    void initSettings() {
 
-      loadAppSettingsPreset( app_options );
+      loadAppSettingsPreset();
 
       loadLanguagePresets();
     }
@@ -125,11 +128,20 @@ class SettingsManager {
       return app_settings_preset.max_image_width;
     }
 
-    void loadAppSettingsPreset( AppOptions& app_options ) {
+    void loadAppSettingsPreset() {
+
+      std::cout <<"\n App settings preset root: " << app_options.app_settings_preset_root << std::endl;
       
       app_settings_preset.app_settings_preset_name = app_options.app_settings_preset_name;
+
+      if ( app_options.app_settings_preset_root == "default" ) {
+        app_options.app_settings_preset_root = "./presets/";
+      }
       
-      json app_settings_preset_json = readJsonFile( "./presets/" + app_options.app_settings_preset_name + ".json" );
+      
+      json app_settings_preset_json = readJsonFile(
+        app_options.app_settings_preset_root + app_options.app_settings_preset_name + ".json"
+      );
 
       app_settings_preset.inference_backend = app_settings_preset_json["inference_backend"].get< std::string >();
       app_settings_preset.server_port = app_settings_preset_json["port"].get<int>();
@@ -217,7 +229,7 @@ class SettingsManager {
 
     void saveAppSettingsPreset() {
 
-      std::string file_path = "./presets/";
+      std::string file_path = app_options.app_settings_preset_root;
       std::string file_name = app_settings_preset.app_settings_preset_name + ".json";
 
       nlohmann::ordered_json settings_preset_json;
@@ -241,10 +253,12 @@ class SettingsManager {
       settings_preset_json["use_dilation"] = app_settings_preset.use_dilation;
       settings_preset_json["cls_thresh"] = app_settings_preset.cls_thresh;
       
-      std::cout << "settings_preset_json..." << std::endl;
+      file_path = file_path + file_name;
+      std::cout << "Saving settings..." << std::endl;
+      std::cout << "Settings file path: " << file_path << std::endl;
       std::cout << std::setw(4) << settings_preset_json << std::endl;      
 
-      writeJsonFile( settings_preset_json, file_path + file_name );
+      writeJsonFile( settings_preset_json, file_path );
     }
 };
 

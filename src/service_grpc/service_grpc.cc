@@ -44,7 +44,9 @@ class PPOCRService final : public OCRService::Service {
 
     PPOCRService( AppOptions app_options ) {
 
-      settings_manager.initSettings( app_options );
+      settings_manager = SettingsManager( app_options );
+
+      settings_manager.initSettings();
       inference_manager.init(
         settings_manager.language_presets,
         settings_manager.getAppSettingsPreset()
@@ -138,7 +140,7 @@ class PPOCRService final : public OCRService::Service {
 };
 
 
-void RunServer( AppOptions& app_options ) {
+void RunServer( AppOptions app_options ) {
 
   PPOCRService service( app_options );
 
