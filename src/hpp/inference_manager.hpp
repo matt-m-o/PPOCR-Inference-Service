@@ -3,8 +3,8 @@
 
 // #include "settings.hpp"
 #include <iostream>
-#include <fastdeploy/vision.h>
 #include <nlohmann/json.hpp>
+#include <fastdeploy/vision.h>
 using json = nlohmann::json;
 
 #include "../../includes/cpp-base64-2.rc.08/base64.cpp"
