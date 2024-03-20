@@ -22,6 +22,12 @@ struct InferenceResult {
   ContextResolution context_resolution;
 };
 
+struct DetectionResult {
+  fastdeploy::vision::OCRResult ocr_result;
+  std::vector< cv::Mat > text_images;
+  ContextResolution context_resolution;
+};
+
 class InferenceManager {
 
     private:
@@ -148,11 +154,7 @@ class InferenceManager {
 
             InferenceResult result;
 
-            std::string decoded_data = base64_decode(base64EncodedImage);
-
-            std::string dec_jpg =  base64_decode(base64EncodedImage);
-            std::vector<uchar> data(dec_jpg.begin(), dec_jpg.end());
-            cv::Mat image = cv::imdecode(cv::Mat(data), 1);
+            cv::Mat image = this->base64ToMat( base64EncodedImage );
             
 
             if ( !image.empty() ) {
@@ -185,6 +187,72 @@ class InferenceManager {
             }
 
             return result;
+        }
+
+        DetectionResult detect(
+            const std::string& image_str,
+            std::string language_code,
+            bool is_base64_encoded
+        ) {
+            std::cout << "detect" << std::endl;
+            const auto language_preset_it = this->language_presets.find( language_code );
+            const auto language_preset = language_preset_it->second;
+
+            DetectionResult detectionResult;
+
+            cv::Mat image;
+
+            if ( is_base64_encoded ) {
+                image = this->base64ToMat( image_str );
+            }
+            else {
+                std::vector<uchar> data(image_str.begin(), image_str.end());
+                image = cv::imdecode( data, cv::IMREAD_COLOR );
+            }
+
+            std::cout << "getModels" << std::endl;
+
+            auto models = this->pipeline_builder.getModels(
+                language_preset,
+                app_settings
+            );
+
+            auto detector = models.detection_model;
+
+
+            fastdeploy::vision::OCRResult predictionResult;
+
+            std::cout << "detector->Predict" << std::endl;
+            if ( !detector->Predict( image, &predictionResult ) ) {
+                std::cerr << "Failed to predict." << std::endl;
+                return detectionResult;
+            }
+
+            ContextResolution context_resolution;
+            context_resolution.width = image.cols;
+            context_resolution.height = image.rows;
+
+            detectionResult.context_resolution = context_resolution;
+
+            if ( predictionResult.boxes.empty() ) {
+                return detectionResult;
+            }
+
+            detectionResult.ocr_result = predictionResult;
+
+            detectionResult.text_images.push_back( image );
+            
+            return detectionResult;
+        }
+
+        cv::Mat base64ToMat( const std::string& base64_encoded_image ) {
+            std::cout << "base64ToMat" << std::endl;
+            std::string decoded_data = base64_decode(base64_encoded_image);
+
+            std::string dec_jpg = base64_decode(base64_encoded_image);
+            std::vector< uchar > data(dec_jpg.begin(), dec_jpg.end());
+            
+            return cv::imdecode( cv::Mat(data), 1 );
         }
 };
 
