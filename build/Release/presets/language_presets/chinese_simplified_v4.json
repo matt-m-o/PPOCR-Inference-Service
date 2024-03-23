@@ -1,6 +1,6 @@
 {
-    "name": "chinese_v4",
-    "language_code": "ch",
+    "name": "chinese_simplified_v4",
+    "language_code": "zh-Hans",
     "detection_model_dir": "ch_PP-OCRv4_det_infer",
     "classification_model_dir" : "ch_ppocr_mobile_v2.0_cls_infer",
     "recognition_model_dir" : "ch_PP-OCRv4_rec_infer",
