@@ -2,9 +2,11 @@
     "name": "default",
     "language_presets": {
         "ja-JP": "japanese_v4",
-        "en": "english_v4",
 		"zh-Hans": "chinese_simplified_v4",
-		"ko-KR": "korean_v4"
+		"zh-Hant": "chinese_traditional_v3",
+		"ko-KR": "korean_v4",
+		"en": "english_v4",
+		"la": "latin_v3"
     },
     "language_code": "ja",
     "initialize_all_language_presets": false,

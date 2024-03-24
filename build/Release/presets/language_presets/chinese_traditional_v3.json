@@ -1,0 +1,8 @@
+{
+    "name": "chinese_traditional_v3",
+    "language_code": "zh-Hant",
+    "detection_model_dir": "ch_PP-OCRv4_det_infer",
+    "classification_model_dir" : "ch_ppocr_mobile_v2.0_cls_infer",
+    "recognition_model_dir" : "chinese_cht_PP-OCRv3_rec_infer",
+    "recognition_label_file_dir" : "chinese_cht_dict.txt"
+}
