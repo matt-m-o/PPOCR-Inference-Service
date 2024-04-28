@@ -70,7 +70,7 @@ class InferenceManager {
             auto pipeline_it = pipelines.find( language_code );
 
             if ( pipeline_it != pipelines.end() ) {
-                std::cout << "Pipeline for [" << language_code << "] already exists!" << std::endl;
+                // std::cout << "Pipeline for [" << language_code << "] already exists!" << std::endl;
                 return;
             }
 
@@ -194,7 +194,7 @@ class InferenceManager {
             std::string language_code,
             bool is_base64_encoded
         ) {
-            std::cout << "detect" << std::endl;
+            // std::cout << "detect" << std::endl;
             const auto language_preset_it = this->language_presets.find( language_code );
             const auto language_preset = language_preset_it->second;
 
@@ -210,7 +210,9 @@ class InferenceManager {
                 image = cv::imdecode( data, cv::IMREAD_COLOR );
             }
 
-            std::cout << "getModels" << std::endl;
+            // cv::imshow("Loaded Image", image);
+            // cv::waitKey(0);
+            // std::cout << "getModels" << std::endl;
 
             auto models = this->pipeline_builder.getModels(
                 language_preset,
@@ -222,7 +224,6 @@ class InferenceManager {
 
             fastdeploy::vision::OCRResult predictionResult;
 
-            std::cout << "detector->Predict" << std::endl;
             if ( !detector->Predict( image, &predictionResult ) ) {
                 std::cerr << "Failed to predict." << std::endl;
                 return detectionResult;
