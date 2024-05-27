@@ -11,5 +11,11 @@
     "inference_backend" : "Open_VINO",
     "cpu_threads": 16,
     "port": 12345,
-	"max_image_width": 1600
+	"max_image_width": 1600,
+    "det_db_thresh": 0.3,
+    "det_db_box_thresh": 0.6,
+    "det_db_unclip_ratio": 1.5,
+    "det_db_score_mode": "slow",
+    "use_dilation": false,
+    "cls_thresh": 0.9
 }

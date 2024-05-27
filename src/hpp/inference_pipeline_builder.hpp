@@ -12,74 +12,19 @@ int const rec_batch_size = 6;
 class InferencePipelineBuilder {
 
 private:
-    fastdeploy::RuntimeOption runtime_option;
     InferenceModelsManager inference_models_manager;
     // std::map<std::string, std::vector<int64_t>> shape_info;
 
 public:
     InferencePipelineBuilder() = default;
-    
-    void generatePipelineBackend(
-        std::string backend,
-        int cpu_threads = 0
-    ) {
 
-        if ( backend == "Paddle_CPU" ) {
-            runtime_option.UseCpu();
-            runtime_option.UsePaddleBackend(); // Paddle Inference | 0
-        }
-        else if ( backend == "Open_VINO" ) {
-            runtime_option.UseCpu();
-            runtime_option.UseOpenVINOBackend(); // OpenVINO | 1
-            
-            // shape_info["x"] = { 1, 3, -1, 960 }; // Replace "input_tensor_name" with the actual input tensor name        
-            // runtime_option.openvino_option.SetShapeInfo( shape_info );     
-        }
-        else if ( backend == "ONNX_CPU" ) {
-            runtime_option.UseCpu();
-            runtime_option.UseOrtBackend(); // ONNX Runtime | 2            
-        }
-        else if ( backend == "Paddle_Lite" ) {
-            runtime_option.UseCpu();    
-            runtime_option.UseLiteBackend(); // Paddle Lite | 3
-        }
-        else if ( backend == "Paddle_GPU" ) {
-            runtime_option.UseGpu();
-            runtime_option.UsePaddleBackend(); // Paddle Inference | 4
-        }
-        else if ( backend == "Paddle_GPU_Tensor_RT" ) {
-            runtime_option.UseGpu();
-            runtime_option.UsePaddleInferBackend();
-            runtime_option.paddle_infer_option.collect_trt_shape = true;
-            runtime_option.paddle_infer_option.enable_trt = true; // Paddle-TensorRT | 5
-        }
-        else if ( backend == "ONNX_GPU" ) {
-            runtime_option.UseGpu();
-            runtime_option.UseOrtBackend(); // ONNX Runtime | 6
-        }
-        else if ( backend == "Tensor_RT" ) {
-            runtime_option.UseGpu();
-            runtime_option.UseTrtBackend(); // TensorRT | 7
-        }
-
-        if ( cpu_threads > 0 && backend != "ONNX_CPU" ) { // Change cpu_threads while using ONNX can cause problems
-            // std::cout << "SetCpuThreadNum: " << cpu_threads << std::endl;
-            runtime_option.SetCpuThreadNum(cpu_threads);
-        }
-    }
-
-    
     std::shared_ptr< fastdeploy::pipeline::PPOCRv4 > buildInferencePipeline(    
         const std::string &det_model_dir,
         const std::string &cls_model_dir,
         const std::string &rec_model_dir,
         const std::string &rec_label_file,
-        const std::string backend = "ONNX_CPU",
-        const int cpu_threads = 0,
-        const int max_side_length = 1920 // Maximum image width
+        const AppSettingsPreset &app_settings
     ) {
-
-        generatePipelineBackend( backend, cpu_threads );
 
         const std::string models_dir = "./models/";
         const std::string recognition_label_files_dir = "./recognition_label_files/";
@@ -88,9 +33,8 @@ public:
             models_dir + det_model_dir,
             models_dir + cls_model_dir,
             models_dir + rec_model_dir,
-            recognition_label_files_dir + rec_label_file, 
-            runtime_option,
-            max_side_length
+            recognition_label_files_dir + rec_label_file,
+            app_settings
         );
 
         // auto detection_model = inference_models_manager.loadDetectionModel( models_dir + det_model_dir, runtime_option );
