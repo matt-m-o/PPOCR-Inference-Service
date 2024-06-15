@@ -112,6 +112,9 @@ void detectionResultGRPCHelper(
             b_axis_idx++; // [ 1 ... 8]
         }
 
+        auto text_line = new_result->add_text_lines();
+        text_line->mutable_box()->CopyFrom(*new_box);
+
         item_idx++;
     }
 }
