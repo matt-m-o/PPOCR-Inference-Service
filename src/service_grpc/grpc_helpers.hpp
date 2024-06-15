@@ -21,7 +21,6 @@ void ocrResultGRPCHelper(
     for ( const std::string& text : inference_result.ocr_result.text ) {
 
         auto new_result = response->add_results();
-        new_result->set_text(text);
         new_result->set_recognition_score( inference_result.ocr_result.rec_scores[ item_idx ] );
         new_result->set_classification_score( inference_result.ocr_result.cls_scores[ item_idx ] ); // Text direction
         new_result->set_classification_label( inference_result.ocr_result.cls_labels[ item_idx ] ); // Text direction
@@ -56,6 +55,10 @@ void ocrResultGRPCHelper(
             box_vertex_idx++; // [ 1 ... 4 ]
             b_axis_idx++; // [ 1 ... 8]
         }
+
+        auto text_line = new_result->add_text_lines();
+        text_line->set_content(text);
+        text_line->mutable_box()->CopyFrom(*new_box);
 
         item_idx++;
     }
