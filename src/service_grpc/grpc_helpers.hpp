@@ -74,7 +74,7 @@ void detectionResultGRPCHelper(
     context_resolution->set_height( detection_result.context_resolution.height );
     
     int item_idx = 0;
-    for ( const std::array< int, 8Ui64 > box : detection_result.ocr_result.boxes ) {
+    for ( const auto _box : detection_result.ocr_result.boxes ) {
 
         std::cout << item_idx;
 
