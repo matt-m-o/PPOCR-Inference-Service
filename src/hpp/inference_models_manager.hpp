@@ -34,12 +34,12 @@ public:
         const AppSettingsPreset &app_settings
     ) {
 
-        std::cout <<"\n  Models: " <<
-                    "\n  det_model_dir: " << det_model_dir <<
-                    "\n  cls_model_dir: " << cls_model_dir <<
-                    "\n  rec_model_dir: " << rec_model_dir <<
-                    "\n  rec_label_file: " << rec_label_file << "\n"
-        << std::endl;
+        // std::cout <<"\n  Models: " <<
+        //             "\n  det_model_dir: " << det_model_dir <<
+        //             "\n  cls_model_dir: " << cls_model_dir <<
+        //             "\n  rec_model_dir: " << rec_model_dir <<
+        //             "\n  rec_label_file: " << rec_label_file << "\n"
+        // << std::endl;
 
         // The cls and rec model can inference a batch of images now.
         // User could initialize the inference batch size and set them after create

@@ -1,0 +1,8 @@
+{
+    "name": "cyrillic_v3",
+    "language_code": "cy",
+    "detection_model_dir": "en_PP-OCRv3_det_infer",
+    "classification_model_dir" : "ch_ppocr_mobile_v2.0_cls_infer",
+    "recognition_model_dir" : "cyrillic_PP-OCRv3_rec_infer",
+    "recognition_label_file_dir" : "cyrillic_dict.txt"
+}

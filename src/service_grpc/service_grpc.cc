@@ -24,6 +24,9 @@ using ocr_service::RecognizeBase64Request;
 using ocr_service::RecognizeDefaultResponse;
 using ocr_service::RecognizeBytesRequest;
 
+using ocr_service::DetectRequest;
+using ocr_service::DetectResponse;
+
 using ocr_service::GetSupportedLanguagesRequest;
 using ocr_service::GetSupportedLanguagesResponse;
 
@@ -88,7 +91,7 @@ class PPOCRService final : public OCRService::Service {
 
       response->set_id( request->id() );
 
-      inferenceResultGRPCHelper( inference_result, response );
+      ocrResultGRPCHelper( inference_result, response );
 
       return Status::OK;
     }
@@ -108,7 +111,28 @@ class PPOCRService final : public OCRService::Service {
 
       response->set_id( request->id() );
 
-      inferenceResultGRPCHelper( inference_result, response );
+      ocrResultGRPCHelper( inference_result, response );
+      
+      return Status::OK;
+    }
+
+    Status Detect(
+      ServerContext* context,
+      const DetectRequest* request,
+      DetectResponse* response
+    ) override {    
+
+      std::string image_str = request->image_bytes();
+      
+      DetectionResult const result = inference_manager.detect(
+        request->image_bytes(),
+        request->language_code(),
+        false
+      );
+
+      response->set_id( request->id() );
+
+      detectionResultGRPCHelper( result, response );
       
       return Status::OK;
     }

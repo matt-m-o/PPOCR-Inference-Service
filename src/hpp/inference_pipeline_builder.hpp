@@ -12,6 +12,8 @@ int const rec_batch_size = 6;
 class InferencePipelineBuilder {
 
 private:
+    const std::string models_dir = "./models/";
+    const std::string recognition_label_files_dir = "./recognition_label_files/";
     InferenceModelsManager inference_models_manager;
     // std::map<std::string, std::vector<int64_t>> shape_info;
 
@@ -25,9 +27,6 @@ public:
         const std::string &rec_label_file,
         const AppSettingsPreset &app_settings
     ) {
-
-        const std::string models_dir = "./models/";
-        const std::string recognition_label_files_dir = "./recognition_label_files/";
 
         Models models = inference_models_manager.getOCRModels(
             models_dir + det_model_dir,
@@ -89,6 +88,32 @@ public:
         }
 
         return pipeline;
+    }
+
+    fastdeploy::vision::ocr::DBDetector* getDetector(
+        const std::string &det_model_dir,
+        const AppSettingsPreset &app_settings
+    ) {
+        return this->inference_models_manager.loadDetectionModel(
+            det_model_dir,
+            app_settings
+        );
+    }
+
+    Models getModels(
+        const LanguagePreset &preset,
+        const AppSettingsPreset &app_settings
+    ) {
+
+        Models models = this->inference_models_manager.getOCRModels(
+            models_dir + preset.detection_model_dir,
+            models_dir + preset.classification_model_dir,
+            models_dir + preset.recognition_model_dir,
+            recognition_label_files_dir + preset.recognition_label_file_dir,
+            app_settings
+        );
+
+        return models;
     }
 };
 
