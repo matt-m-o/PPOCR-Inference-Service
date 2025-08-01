@@ -11,7 +11,7 @@
     },
     "language_code": "ja",
     "initialize_all_language_presets": false,
-    "inference_backend": "Open_VINO",
+    "inference_backend": "ONNX_CPU",
     "cpu_threads": 24,
     "port": 12345,
     "max_image_width": 1600,
